@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>霞湖世家 · 官号内容工具</title>
+<style>
+:root{
+  --g1:#1D4ED8;--g2:#3B82F6;--g3:#64748B;--g4:#334155;
+  --bg:#F0F4FF;--surface:#fff;
+  --text:#0F172A;--sub:#64748B;--border:#E2E8F0;
+  --ok:#10B981;--warn:#F59E0B;--err:#EF4444;
+  --r:10px;--rl:16px;
+  --sh:0 4px 24px rgba(29,78,216,.08);
+  --font:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── NAV ── */
+nav.top{background:linear-gradient(120deg,#0F172A 0%,#1D4ED8 60%,#3B82F6 100%);
+  height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(29,78,216,.3)}
+.nav-brand{color:#fff;font-size:16px;font-weight:800;letter-spacing:-.3px;flex-shrink:0}
+.nav-brand span{font-size:11px;font-weight:400;opacity:.7;margin-left:8px}
+.nav-right{display:flex;gap:8px;align-items:center}
+.nav-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;
+  padding:5px 14px;border-radius:18px;font-size:12px;cursor:pointer;font-family:var(--font);transition:.15s}
+.nav-btn:hover{background:rgba(255,255,255,.25)}
+
+/* 角色切换 tabs */
+.role-tabs{display:flex;gap:4px;background:rgba(0,0,0,.2);border-radius:20px;padding:3px}
+.role-tab{background:transparent;border:none;color:rgba(255,255,255,.65);
+  padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;
+  font-family:var(--font);transition:.15s;white-space:nowrap}
+.role-tab:hover{color:#fff;background:rgba(255,255,255,.15)}
+.role-tab.active{background:#fff;color:#1D4ED8}
+
+/* ── LAYOUT ── */
+.layout{display:flex;height:calc(100vh - 56px);overflow:hidden}
+aside{width:192px;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.sb-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.sb-title{font-size:13px;font-weight:700;color:var(--text)}
+.sb-sub{font-size:11px;color:var(--sub);margin-top:2px}
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto}
+.sb-section{font-size:10px;font-weight:700;color:var(--sub);letter-spacing:1px;
+  padding:8px 16px 3px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;
+  font-weight:500;color:#475569;cursor:pointer;transition:.12s;
+  border-left:3px solid transparent;user-select:none}
+.sb-item:hover{background:rgba(29,78,216,.04);color:var(--text)}
+.sb-item.active{color:var(--g1);background:rgba(29,78,216,.06);
+  border-left-color:var(--g1);font-weight:600}
+.sb-icon{font-size:15px;width:20px;text-align:center}
+main{flex:1;overflow-y:auto;background:var(--bg)}
+
+/* ── PAGE ── */
+.page{display:none;padding:22px 24px;max-width:980px}
+.page.on{display:block}
+.page-hd{margin-bottom:20px}
+.page-hd h2{font-size:17px;font-weight:800;color:var(--text);margin-bottom:4px}
+.page-hd p{font-size:12px;color:var(--sub)}
+
+/* ── CARD ── */
+.card{background:var(--surface);border-radius:var(--rl);padding:20px;
+  border:1px solid var(--border);margin-bottom:14px;box-shadow:var(--sh)}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.card-hd h3{font-size:14px;font-weight:700;color:var(--text);flex:1}
+.step{width:22px;height:22px;border-radius:50%;background:var(--g1);color:#fff;
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ── FORM ── */
+.flabel{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);
+  font-size:13px;font-family:var(--font);color:var(--text);outline:none;transition:.15s;background:#fff}
+.fi:focus{border-color:var(--g1)}
+textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
+
+/* ── BUTTONS ── */
+.btn-pri{background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;border:none;
+  padding:9px 20px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:var(--font);transition:.15s}
+.btn-pri:hover{opacity:.9;transform:translateY(-1px)}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-sec{background:var(--surface);color:var(--g1);border:1.5px solid var(--g1);
+  padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:var(--font);transition:.15s}
+.btn-sec:hover{background:rgba(29,78,216,.05)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-ghost{background:transparent;color:var(--sub);border:1px solid var(--border);
+  padding:5px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--font);transition:.15s}
+.btn-ghost:hover{border-color:var(--g1);color:var(--g1)}
+.btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn-ok{background:var(--ok);color:#fff;border:none;padding:9px 20px;border-radius:var(--r);
+  font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:.15s}
+.btn-ok:hover{opacity:.9}
+.btn-ok:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── CHIPS ── */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--border);color:var(--sub);background:var(--surface);transition:.15s;user-select:none}
+.chip:hover{border-color:var(--g2);color:var(--g2)}
+.chip.on{background:var(--g1);color:#fff;border-color:var(--g1)}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--rl);padding:28px;
+  text-align:center;cursor:pointer;transition:.2s;color:var(--sub);font-size:13px}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--g1);background:rgba(29,78,216,.03);color:var(--g1)}
+.upload-zone .uz-icon{font-size:28px;margin-bottom:8px}
+
+/* ── OUTPUT ── */
+.output-box{background:#F8FAFC;border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;min-height:80px;font-size:13px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.output-box h2{font-size:15px;font-weight:700;margin:12px 0 6px;color:var(--text)}
+.output-box h3{font-size:13px;font-weight:700;margin:10px 0 4px;color:var(--g1)}
+.output-box ul{margin-left:18px;margin-top:4px}.output-box li{margin-bottom:3px}
+.output-box strong{font-weight:700;color:var(--text)}
+.output-box code{background:#E2E8F0;padding:1px 5px;border-radius:4px;font-size:12px}
+.output-box blockquote{border-left:3px solid var(--g1);padding-left:10px;color:var(--sub)}
+
+/* ── BRIEF CARDS ── */
+.brief-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:8px}
+.brief-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.brief-card-title{font-size:11px;font-weight:700;color:var(--g1);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:8px}
+.brief-card-body{font-size:12px;color:var(--text);line-height:1.7}
+
+/* ── REF ITEMS ── */
+.ref-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;margin-bottom:10px;position:relative}
+.ref-item-meta{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.ref-label{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600;
+  background:rgba(29,78,216,.1);color:var(--g1)}
+.ref-body{font-size:12px;color:var(--text);line-height:1.7;
+  max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.ref-del{position:absolute;top:10px;right:10px;background:none;border:none;
+  cursor:pointer;font-size:16px;color:var(--sub);padding:2px 6px;border-radius:4px}
+.ref-del:hover{color:var(--err)}
+
+/* ── SUBMISSION LIST ── */
+.sub-item{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;
+  padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.sub-item-num{width:22px;height:22px;border-radius:50%;background:var(--ok);color:#fff;
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sub-item-info{flex:1;min-width:0}
+.sub-item-meta{font-size:11px;color:var(--sub)}
+.sub-item-score{font-size:12px;font-weight:700;color:var(--ok)}
+
+/* ── SCORE ── */
+.score-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.score-num{font-size:28px;font-weight:800;color:var(--g1)}
+.verdict-badge{padding:4px 12px;border-radius:14px;font-size:13px;font-weight:700}
+.verdict-pass{background:#D1FAE5;color:#065F46}
+.verdict-revise{background:#FEF3C7;color:#92400E}
+.verdict-fail{background:#FEE2E2;color:#991B1B}
+
+/* ── COMPARE ── */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.compare-grid{grid-template-columns:1fr}}
+
+/* ── ROLE MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;
+  display:flex;align-items:center;justify-content:center}
+.modal-overlay.hidden{display:none}
+.modal-box{background:var(--surface);border-radius:20px;padding:32px;
+  width:90%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;text-align:center}
+.modal-sub{font-size:12px;color:var(--sub);text-align:center;margin-bottom:22px}
+.role-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.role-btn{background:var(--bg);border:2px solid var(--border);border-radius:14px;
+  padding:20px 12px;cursor:pointer;text-align:center;transition:.2s;font-family:var(--font)}
+.role-btn:hover{border-color:var(--g1);background:rgba(29,78,216,.04);transform:translateY(-2px)}
+.role-icon{font-size:26px;margin-bottom:8px}
+.role-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.role-desc{font-size:11px;color:var(--sub);line-height:1.5}
+
+/* ── SETTINGS MODAL ── */
+.smodal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199;
+  display:flex;align-items:center;justify-content:center}
+.smodal-overlay.hidden{display:none}
+.smodal-box{background:var(--surface);border-radius:16px;padding:26px;
+  width:90%;max-width:440px;box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.smodal-title{font-size:15px;font-weight:700;margin-bottom:16px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1E293B;color:#fff;padding:9px 20px;border-radius:24px;font-size:13px;
+  opacity:0;transition:.25s;z-index:500;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── MISC ── */
+.empty-hint{text-align:center;color:var(--sub);font-size:13px;padding:32px;opacity:.7}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+.tag-hint{font-size:11px;color:var(--sub);background:#F1F5F9;padding:3px 8px;
+  border-radius:6px;display:inline-block;margin:2px 3px}
+.info-strip{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;
+  padding:10px 14px;font-size:12px;color:#1D4ED8;margin-bottom:14px;line-height:1.6}
+.warn-strip{background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;
+  padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:14px}
+.admin-only{display:none}.admin-only.show{display:block}
+.writer-only{display:none}.writer-only.show{display:block}
+.export-section{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--r);
+  padding:16px;margin-top:14px}
+.export-section h4{font-size:13px;font-weight:700;color:#065F46;margin-bottom:4px}
+.export-section p{font-size:11px;color:#047857;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<!-- ── 角色选择弹窗（首次） ── -->
+<div id="role-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">霞湖世家 · 官号内容工具</div>
+    <div class="modal-sub">请选择您的角色（之后可随时在顶部切换）</div>
+    <div class="role-btns">
+      <button class="role-btn" onclick="selectRole('admin')">
+        <div class="role-icon">🔑</div>
+        <div class="role-name">管理员</div>
+        <div class="role-desc">Brief管理 · 参考库 · 生成 · 审核 · 双稿对比</div>
+      </button>
+      <button class="role-btn" onclick="selectRole('writerA')">
+        <div class="role-icon">✍️</div>
+        <div class="role-name">写手 A</div>
+        <div class="role-desc">文案生成 · AI审核 · 提交改稿 · 每日导出</div>
+      </button>
+      <button class="role-btn" onclick="selectRole('writerB')">
+        <div class="role-icon">✏️</div>
+        <div class="role-name">写手 B</div>
+        <div class="role-desc">文案生成 · AI审核 · 提交改稿 · 每日导出</div>
+      </button>
+    </div>
+    <p style="text-align:center;margin-top:16px;font-size:11px;color:var(--sub)">
+      写手请在各自设备上选择对应角色 · 选后顶部可随时切换
+    </p>
+  </div>
+</div>
+
+<!-- ── 设置弹窗 ── -->
+<div id="settings-modal" class="smodal-overlay hidden">
+  <div class="smodal-box">
+    <div class="smodal-title">⚙️ 设置</div>
+    <div class="flabel" style="margin-bottom:6px">共享代理地址（留空使用默认）</div>
+    <input id="cfg-proxy" class="fi" placeholder="https://..." style="margin-bottom:12px">
+    <div class="flabel" style="margin-bottom:6px">直接使用 API Key（可选）</div>
+    <input id="cfg-key" class="fi" type="password" placeholder="sk-..." style="margin-bottom:16px">
+    <div class="btn-row">
+      <button class="btn-pri" onclick="saveSettings()">保存</button>
+      <button class="btn-sec" onclick="closeSettings()">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 顶部导航 ── -->
+<nav class="top">
+  <div class="nav-brand">霞湖世家 <span>官号内容工具</span></div>
+  <div class="nav-right">
+    <div class="role-tabs">
+      <button class="role-tab" data-role="admin" onclick="quickSwitch('admin')">🔑 管理员</button>
+      <button class="role-tab" data-role="writerA" onclick="quickSwitch('writerA')">✍️ 写手A</button>
+      <button class="role-tab" data-role="writerB" onclick="quickSwitch('writerB')">✏️ 写手B</button>
+    </div>
+    <button class="nav-btn" onclick="openSettings()">⚙️</button>
+  </div>
+</nav>
+
+<!-- ── 主布局 ── -->
+<div class="layout">
+  <aside>
+    <div class="sb-header">
+      <div class="sb-title">霞湖世家</div>
+      <div class="sb-sub">80支 / 200支液氨棉</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">工作流</div>
+      <div class="sb-item" data-page="brief" onclick="navigate('brief')">
+        <span class="sb-icon">📋</span>Brief 解析
+      </div>
+      <div class="sb-item" data-page="refs" onclick="navigate('refs')">
+        <span class="sb-icon">📚</span>参考内容库
+      </div>
+      <div class="sb-item" data-page="generate" onclick="navigate('generate')">
+        <span class="sb-icon">✨</span>文案生成
+      </div>
+      <div class="sb-item" data-page="review" onclick="navigate('review')">
+        <span class="sb-icon">🔍</span>审核工作台
+      </div>
+    </nav>
+  </aside>
+
+  <main>
+
+    <!-- ══ Brief 解析 ══ -->
+    <div class="page" id="page-brief">
+      <div class="page-hd">
+        <h2>📋 Brief 解析</h2>
+        <p>上传霞湖世家推广 Brief，AI 自动提取官号可用的创作知识（过滤达人专属内容）</p>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="step">1</div><h3>上传 Brief 文件</h3></div>
+        <div class="upload-zone" id="brief-upload-zone"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="event.preventDefault();this.classList.remove('drag');handleBriefFile(event.dataTransfer.files[0])">
+          <div class="uz-icon">📄</div>
+          <div>拖入 <strong>.md / .txt</strong> 文件，或
+            <label style="color:var(--g1);cursor:pointer;font-weight:600">点击选择
+              <input type="file" accept=".md,.txt" style="display:none" onchange="handleBriefFile(this.files[0])">
+            </label>
+          </div>
+          <div style="font-size:11px;color:var(--sub);margin-top:6px">PDF/Word 请先导出为文本</div>
+        </div>
+        <div id="brief-file-info" style="display:none;margin-top:10px;font-size:12px;color:var(--ok)"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="step">或</div><h3>直接粘贴 Brief 内容</h3></div>
+        <textarea id="brief-paste" class="fi" style="min-height:160px" placeholder="将 Brief 全文粘贴至此处..."></textarea>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn-pri" id="brief-parse-btn" onclick="doBriefParse()">🧠 AI 拆解（官号视角）</button>
+          <button class="btn-ghost btn-sm" onclick="clearBrief()">清除</button>
+        </div>
+      </div>
+
+      <!-- 加载中 -->
+      <div id="brief-loading" style="display:none">
+        <div class="card">
+          <div style="color:var(--sub);font-size:13px">⏳ AI 正在拆解 Brief，提取官号可用内容…</div>
+          <div class="output-box" id="brief-stream-box" style="margin-top:8px;min-height:60px"></div>
+        </div>
+      </div>
+
+      <!-- 结果 -->
+      <div id="brief-result" style="display:none">
+        <div class="card">
+          <div class="card-hd">
+            <div class="step">✓</div>
+            <h3>官号创作知识（已过滤达人专属内容）</h3>
+            <button class="btn-ghost btn-sm" onclick="clearBrief()" style="margin-left:auto">重新解析</button>
+          </div>
+          <div class="brief-grid">
+            <div class="brief-card">
+              <div class="brief-card-title">🏷️ 品牌基础</div>
+              <div class="brief-card-body" id="bc-brand">-</div>
+            </div>
+            <div class="brief-card">
+              <div class="brief-card-title">📦 产品信息</div>
+              <div class="brief-card-body" id="bc-products">-</div>
+            </div>
+            <div class="brief-card" style="grid-column:1/-1">
+              <div class="brief-card-title">🎯 官号内容方向（已标注适用性）</div>
+              <div id="bc-directions" class="brief-card-body">-</div>
+            </div>
+            <div class="brief-card" style="grid-column:1/-1">
+              <div class="brief-card-title">✅ 必带卖点与标签</div>
+              <div class="brief-card-body" id="bc-kpitags">-</div>
+            </div>
+            <div class="brief-card">
+              <div class="brief-card-title">📐 执行要求（官号版）</div>
+              <div class="brief-card-body" id="bc-execution">-</div>
+            </div>
+            <div class="brief-card">
+              <div class="brief-card-title">🚫 审核红线</div>
+              <div class="brief-card-body" id="bc-redlines">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 参考内容库 ══ -->
+    <div class="page" id="page-refs">
+      <div class="page-hd">
+        <h2>📚 参考内容库</h2>
+        <p>管理已通过审核的优质官号文案，生成时可作为风格参考</p>
+      </div>
+
+      <div class="card admin-only" id="add-ref-card">
+        <div class="card-hd"><div class="step">+</div><h3>添加参考文案（管理员）</h3></div>
+        <div class="flabel">内容方向</div>
+        <div class="chips" style="margin-bottom:12px">
+          <div class="chip on" data-ref-dir="品牌" onclick="toggleRefDir(this)">品牌</div>
+          <div class="chip" data-ref-dir="强品" onclick="toggleRefDir(this)">强品</div>
+          <div class="chip" data-ref-dir="促销" onclick="toggleRefDir(this)">促销</div>
+        </div>
+        <div class="flabel">产品</div>
+        <div class="chips" style="margin-bottom:12px">
+          <div class="chip on" data-ref-prod="80支A款" onclick="toggleRefProd(this)">80支A款</div>
+          <div class="chip" data-ref-prod="80支B款" onclick="toggleRefProd(this)">80支B款</div>
+          <div class="chip" data-ref-prod="200支" onclick="toggleRefProd(this)">200支</div>
+        </div>
+        <div class="flabel">文案内容（完整帖子）</div>
+        <textarea id="ref-content" class="fi" style="min-height:140px" placeholder="粘贴已通过审核的优质官号文案..."></textarea>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn-pri" onclick="addRef()">添加到参考库</button>
+        </div>
+      </div>
+
+      <div id="refs-list"></div>
+    </div>
+
+    <!-- ══ 文案生成 ══ -->
+    <div class="page" id="page-generate">
+      <div class="page-hd">
+        <h2>✨ 官号文案生成</h2>
+        <p>以霞湖世家品牌官方视角生成小红书图文，不使用素人/达人口吻</p>
+      </div>
+
+      <div id="brief-status-strip" class="info-strip" style="display:none">
+        ✅ Brief 已解析 · 生成将结合品牌知识库
+      </div>
+      <div id="no-brief-strip" class="warn-strip" style="display:none">
+        ⚠️ 尚未解析 Brief · 建议先完成「Brief 解析」获得更精准的生成效果
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="step">1</div><h3>内容方向</h3></div>
+        <div class="chips">
+          <div class="chip on" data-dir="品牌" onclick="setDir(this)">🏷️ 品牌</div>
+          <div class="chip" data-dir="强品" onclick="setDir(this)">💪 强品</div>
+          <div class="chip" data-dir="促销" onclick="setDir(this)">🎁 促销</div>
+        </div>
+        <div id="dir-hint" style="margin-top:10px;font-size:12px;color:var(--sub);line-height:1.6">
+          品牌：以霞湖世家官方名义输出品牌价值观、理念、态度，「好的产品不需要自夸」调性
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="step">2</div><h3>产品</h3></div>
+        <div class="chips">
+          <div class="chip on" data-prod="80支液氨棉T恤" onclick="setProd(this)">80支</div>
+          <div class="chip" data-prod="200支液氨棉T恤" onclick="setProd(this)">200支</div>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--sub)">如需区分 A/B 款版型，在下方「补充要求」中注明（强品方向适用）</div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="step">3</div><h3>参考文案（可选）</h3></div>
+        <div class="flabel">从参考库选择</div>
+        <select id="ref-select" class="fi" style="min-height:unset;height:38px;padding:8px 12px;margin-bottom:10px">
+          <option value="">— 不使用参考文案 —</option>
+        </select>
+        <div class="flabel">或直接粘贴</div>
+        <textarea id="ref-paste" class="fi" style="min-height:72px" placeholder="粘贴参考文案，AI 参考其结构和语气（但以品牌官号视角重写）..."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div class="step">4</div><h3>补充要求（可选）</h3></div>
+        <textarea id="extra-req" class="fi" style="min-height:64px" placeholder="例如：重点突出透气性 / 结合送礼场景（父亲生日/毕业/升职） / 篇幅控制在 250 字以内..."></textarea>
+      </div>
+
+      <div class="btn-row" style="margin-bottom:14px">
+        <button class="btn-pri" id="gen-btn" onclick="doGenerate()">✨ 生成文案</button>
+        <button class="btn-ghost btn-sm" onclick="clearGen()">清空</button>
+      </div>
+
+      <div class="card" id="gen-output-card" style="display:none">
+        <div class="card-hd">
+          <h3>生成结果</h3>
+          <div class="btn-row" style="margin-left:auto">
+            <button class="btn-ghost btn-sm" onclick="copyGen()">复制</button>
+            <button class="btn-sec btn-sm" onclick="sendToReview()">→ 发送到审核台</button>
+          </div>
+        </div>
+        <div id="gen-output" class="output-box">等待生成…</div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div class="flabel">发布时必须携带的标签</div>
+          <div style="margin-top:6px">
+            <span class="tag-hint">#霞湖世家</span>
+            <span class="tag-hint">#通勤穿搭</span>
+            <span class="tag-hint">#百搭穿搭</span>
+            <span class="tag-hint" id="prod-tag">#霞湖世家80支液氨棉T</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 审核工作台 ══ -->
+    <div class="page" id="page-review">
+      <div class="page-hd">
+        <h2>🔍 审核工作台</h2>
+        <p>AI 审核 → 人工修改 → 提交记录 → 每日导出发给管理员</p>
+      </div>
+
+      <!-- AI 审核区 -->
+      <div class="card">
+        <div class="card-hd"><div class="step">AI</div><h3>AI 自动审核</h3></div>
+        <div class="flabel">待审核文案（从「文案生成」自动填入，或手动粘贴）</div>
+        <textarea id="review-input" class="fi" style="min-height:150px" placeholder="粘贴要审核的文案..."></textarea>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn-pri" id="review-btn" onclick="doAIReview()">🔍 开始审核</button>
+          <button class="btn-ghost btn-sm" onclick="document.getElementById('review-input').value=''">清空</button>
+        </div>
+        <div id="review-result-area" style="display:none;margin-top:16px">
+          <hr class="divider">
+          <div class="score-row">
+            <div>
+              <div style="font-size:11px;color:var(--sub);margin-bottom:2px">AI 评分</div>
+              <div style="display:flex;align-items:baseline;gap:4px">
+                <div class="score-num" id="r-score">—</div>
+                <div style="color:var(--sub);font-size:13px">/ 100</div>
+              </div>
+            </div>
+            <div style="margin-left:20px">
+              <div style="font-size:11px;color:var(--sub);margin-bottom:2px">人工评分</div>
+              <div style="display:flex;align-items:baseline;gap:4px">
+                <input id="human-score" type="number" min="0" max="100"
+                  style="width:54px;font-size:22px;font-weight:700;color:var(--accent);border:none;border-bottom:2px solid var(--border);background:none;text-align:center;outline:none;padding:0"
+                  placeholder="—">
+                <div style="color:var(--sub);font-size:13px">/ 100</div>
+              </div>
+            </div>
+            <div class="verdict-badge" id="r-verdict" style="margin-left:auto">待定</div>
+          </div>
+          <div id="review-output" class="output-box" style="min-height:80px"></div>
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn-ghost btn-sm" onclick="copyReview()">复制审核报告</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 写手修改区 -->
+      <div class="card writer-only" id="writer-draft-card">
+        <div class="card-hd">
+          <div class="step">✍️</div>
+          <h3 id="draft-card-title">人工修改稿</h3>
+          <div style="margin-left:auto;font-size:12px;color:var(--sub)">
+            今日已提交 <strong id="sub-count" style="color:var(--ok)">0</strong> 篇
+          </div>
+        </div>
+        <div class="info-strip">
+          参考 AI 审核报告修改 → 点「提交这篇」→ 继续下一篇 → 当天结束后导出全部记录发给管理员
+        </div>
+        <textarea id="my-draft" class="fi" style="min-height:200px"
+          placeholder="AI 审核完成后，这里会自动出现根据审核报告生成的修改稿&#10;&#10;在修改稿基础上继续修改 → 点「提交这篇」完成本篇"></textarea>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn-ok" onclick="submitArticle()">✓ 提交这篇</button>
+          <button class="btn-ghost btn-sm" onclick="autoSaveDraft()">暂存</button>
+          <span id="draft-saved-tip" style="font-size:11px;color:var(--ok);display:none">已暂存 ✓</span>
+        </div>
+
+        <!-- 已提交列表 -->
+        <div id="sub-list-wrap" style="display:none;margin-top:16px">
+          <hr class="divider">
+          <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px">今日已提交记录</div>
+          <div id="sub-list"></div>
+        </div>
+
+        <!-- 导出区 -->
+        <div class="export-section" id="export-section" style="display:none">
+          <h4>📤 每日导出</h4>
+          <p>包含：AI原始稿 + AI审核报告 + 人工修改稿，发给管理员用于优化</p>
+          <div class="btn-row">
+            <button class="btn-sec" onclick="exportDailyRecords()">导出今日全部记录</button>
+            <button class="btn-ghost btn-sm" onclick="clearSubmissions()">清空记录</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 管理员双稿对比区 -->
+      <div class="card admin-only" id="compare-card">
+        <div class="card-hd">
+          <div class="step">⚖️</div>
+          <h3>双稿对比分析</h3>
+        </div>
+        <div class="info-strip">
+          收到写手A/B发来的记录文件后，将各自的修改稿粘贴至此进行对比
+        </div>
+        <div class="compare-grid">
+          <div>
+            <div class="flabel">写手 A 修改稿</div>
+            <textarea id="draft-a" class="fi" style="min-height:160px" placeholder="粘贴写手 A 的草稿..."></textarea>
+          </div>
+          <div>
+            <div class="flabel">写手 B 修改稿</div>
+            <textarea id="draft-b" class="fi" style="min-height:160px" placeholder="粘贴写手 B 的草稿..."></textarea>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn-pri" id="compare-btn" onclick="doCompare()">⚖️ AI 对比分析</button>
+        </div>
+        <div id="compare-result" style="display:none;margin-top:14px">
+          <hr class="divider">
+          <div class="output-box" id="compare-output"></div>
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn-ghost btn-sm" onclick="copyCompare()">复制对比报告</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════
+const DEFAULT_PROXY = 'https://xiahu-ai.qusiyu0311.workers.dev';
+const LS = 'xhsj_';
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+const S = {
+  role: null,
+  proxyUrl: DEFAULT_PROXY,
+  apiKey: '',
+  brief: null,
+  briefRaw: '',
+  refs: [],
+  currentDir: '品牌',
+  currentProd: '80支液氨棉T恤（A款）',
+  gen: '',
+  currentAiDraft: '',   // AI 生成的原始稿（用于提交记录）
+  currentAiReview: '',  // AI 审核报告（用于提交记录）
+  currentAiScore: 0,
+  reviewBuf: '',
+  submissions: [],      // 当天已提交的篇目
+};
+
+const DIR_HINTS = {
+  '品牌': '以霞湖世家官方名义输出品牌价值观、理念、态度，「好的产品不需要自夸」调性，无强引流',
+  '强品': '官方角度深度展示产品卖点、工艺细节、场景体验，B款可包含穿搭教学，软引流',
+  '促销': '礼赠推荐、直播间引流（软性CTA）、限时活动，中等强度引流',
+};
+const DIR_CTA = {
+  '品牌': '无强引流，最多末尾一句「更多品质内容关注我们」',
+  '强品': '软引流：「想了解更多，直播间见」',
+  '促销': '中等引流：「今天在直播间，我们给大家准备了专属福利」',
+};
+const PROD_TAGS = {
+  '80支液氨棉T恤': '#霞湖世家80支液氨棉T',
+  '200支液氨棉T恤': '#霞湖世家200支液氨棉T恤',
+};
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.onload = () => {
+  try {
+    const cfg = JSON.parse(localStorage.getItem(LS+'cfg') || '{}');
+    if (cfg.proxyUrl) S.proxyUrl = cfg.proxyUrl;
+    if (cfg.apiKey)   S.apiKey   = cfg.apiKey;
+  } catch {}
+  try { S.role = localStorage.getItem(LS+'role') || null; } catch {}
+  try { S.refs = JSON.parse(localStorage.getItem(LS+'refs') || '[]'); } catch {}
+  try { S.brief = JSON.parse(localStorage.getItem(LS+'brief') || 'null'); } catch {}
+  try { S.briefRaw = localStorage.getItem(LS+'brief_raw') || ''; } catch {}
+
+  // 加载写手的提交记录和暂存草稿
+  const subKey = S.role === 'writerA' ? LS+'sub_a' : LS+'sub_b';
+  try { S.submissions = JSON.parse(localStorage.getItem(subKey) || '[]'); } catch {}
+  const draftKey = S.role === 'writerA' ? LS+'draft_a' : LS+'draft_b';
+  try {
+    const saved = localStorage.getItem(draftKey) || '';
+    if (saved) document.getElementById('my-draft').value = saved;
+  } catch {}
+
+  if (S.role) {
+    document.getElementById('role-modal').classList.add('hidden');
+    applyRole();
+    if (S.brief) {
+      document.getElementById('brief-result').style.display = '';
+      renderBriefCards(S.brief);
+    }
+    navigate('brief');
+  }
+};
+
+// ══════════════════════════════════════════════
+// ROLE
+// ══════════════════════════════════════════════
+function selectRole(role) {
+  S.role = role;
+  try { localStorage.setItem(LS+'role', role); } catch {}
+  document.getElementById('role-modal').classList.add('hidden');
+  // 加载该角色的提交记录
+  const subKey = role === 'writerA' ? LS+'sub_a' : LS+'sub_b';
+  try { S.submissions = JSON.parse(localStorage.getItem(subKey) || '[]'); } catch {}
+  applyRole();
+  navigate('brief');
+}
+
+function quickSwitch(role) {
+  // 先保存当前写手草稿
+  if (S.role === 'writerA' || S.role === 'writerB') {
+    const key = S.role === 'writerA' ? LS+'draft_a' : LS+'draft_b';
+    try { localStorage.setItem(key, document.getElementById('my-draft').value); } catch {}
+    const subKey = S.role === 'writerA' ? LS+'sub_a' : LS+'sub_b';
+    try { localStorage.setItem(subKey, JSON.stringify(S.submissions)); } catch {}
+  }
+  S.role = role;
+  try { localStorage.setItem(LS+'role', role); } catch {}
+  // 加载新角色数据
+  const subKey = role === 'writerA' ? LS+'sub_a' : LS+'sub_b';
+  try { S.submissions = JSON.parse(localStorage.getItem(subKey) || '[]'); } catch {}
+  const draftKey = role === 'writerA' ? LS+'draft_a' : LS+'draft_b';
+  try {
+    document.getElementById('my-draft').value = localStorage.getItem(draftKey) || '';
+  } catch {}
+  applyRole();
+  toast(`已切换到${role === 'admin' ? '管理员' : role === 'writerA' ? '写手A' : '写手B'} ✓`);
+  navigate(document.querySelector('.sb-item.active')?.dataset.page || 'brief');
+}
+
+function applyRole() {
+  const isAdmin  = S.role === 'admin';
+  const isWriter = S.role === 'writerA' || S.role === 'writerB';
+  document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('show', isAdmin));
+  document.querySelectorAll('.writer-only').forEach(el => el.classList.toggle('show', isWriter));
+  document.querySelectorAll('.role-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.role === S.role);
+  });
+  if (isWriter) {
+    const name = S.role === 'writerA' ? '写手 A' : '写手 B';
+    const el = document.getElementById('draft-card-title');
+    if (el) el.textContent = `${name} 修改稿`;
+    renderSubList();
+  }
+}
+
+// ══════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════
+function openSettings() {
+  document.getElementById('cfg-proxy').value = S.proxyUrl !== DEFAULT_PROXY ? S.proxyUrl : '';
+  document.getElementById('cfg-key').value   = S.apiKey || '';
+  document.getElementById('settings-modal').classList.remove('hidden');
+}
+function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+function saveSettings() {
+  const proxy = document.getElementById('cfg-proxy').value.trim();
+  const key   = document.getElementById('cfg-key').value.trim();
+  S.proxyUrl  = proxy || DEFAULT_PROXY;
+  S.apiKey    = key;
+  try { localStorage.setItem(LS+'cfg', JSON.stringify({proxyUrl:S.proxyUrl,apiKey:S.apiKey})); } catch {}
+  closeSettings(); toast('设置已保存 ✓');
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATE
+// ══════════════════════════════════════════════
+function navigate(pg) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  const page = document.getElementById('page-'+pg);
+  if (page) page.classList.add('on');
+  const item = document.querySelector(`.sb-item[data-page="${pg}"]`);
+  if (item) item.classList.add('active');
+  if (pg === 'refs')     renderRefs();
+  if (pg === 'generate') refreshGenPage();
+}
+
+function refreshGenPage() {
+  const has = !!S.brief;
+  document.getElementById('brief-status-strip').style.display = has ? '' : 'none';
+  document.getElementById('no-brief-strip').style.display     = has ? 'none' : '';
+  renderRefSelect();
+}
+
+// ══════════════════════════════════════════════
+// AI CALL
+// ══════════════════════════════════════════════
+async function callAI(sys, usr, cb, signal) {
+  if (S.apiKey) { await streamClaude(sys, usr, cb, signal); }
+  else { await streamProxy(sys, usr, cb, signal); }
+}
+
+async function streamProxy(sys, usr, cb, signal) {
+  const r = await fetch(S.proxyUrl, {
+    method:'POST', signal,
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'deepseek-chat',system:sys,
+      messages:[{role:'user',content:usr}],stream:true})
+  });
+  if (!r.ok) throw new Error(`代理请求失败: ${r.status} ${await r.text()}`);
+  const reader = r.body.getReader(), dec = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const {done,value} = await reader.read(); if (done) break;
+    buf += dec.decode(value,{stream:true});
+    const lines = buf.split('\n'); buf = lines.pop();
+    for (const l of lines) {
+      if (!l.startsWith('data: ')) continue;
+      const d = l.slice(6).trim(); if (d==='[DONE]') return;
+      try { const t=JSON.parse(d).choices?.[0]?.delta?.content||''; if(t) cb(t); } catch {}
+    }
+  }
+}
+
+async function streamClaude(sys, usr, cb, signal) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST', signal,
+    headers:{'Content-Type':'application/json','x-api-key':S.apiKey,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({model:'claude-opus-4-8',max_tokens:4096,system:sys,
+      messages:[{role:'user',content:usr}],stream:true})
+  });
+  if (!r.ok) throw new Error(`API失败: ${r.status}`);
+  const reader = r.body.getReader(), dec = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const {done,value} = await reader.read(); if (done) break;
+    buf += dec.decode(value,{stream:true});
+    const lines = buf.split('\n'); buf = lines.pop();
+    for (const l of lines) {
+      if (!l.startsWith('data: ')) continue;
+      try { const j=JSON.parse(l.slice(6).trim());
+        if(j.type==='content_block_delta'){const t=j.delta?.text||'';if(t)cb(t);} } catch {}
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+// MODULE 1: BRIEF 解析
+// ══════════════════════════════════════════════
+function handleBriefFile(file) {
+  if (!file) return;
+  if (!file.name.match(/\.(md|txt)$/i)) { toast('请上传 .md 或 .txt 文件'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('brief-paste').value = e.target.result;
+    document.getElementById('brief-file-info').style.display = '';
+    document.getElementById('brief-file-info').textContent = `✓ 已载入：${file.name}（${(file.size/1024).toFixed(1)} KB）`;
+    toast(`已载入 ${file.name} ✓`);
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+async function doBriefParse() {
+  const text = document.getElementById('brief-paste').value.trim();
+  if (!text) { toast('请先上传或粘贴 Brief 内容'); return; }
+  const btn = document.getElementById('brief-parse-btn');
+  btn.disabled = true; btn.textContent = '解析中…';
+  document.getElementById('brief-result').style.display = 'none';
+  document.getElementById('brief-loading').style.display = '';
+  document.getElementById('brief-stream-box').textContent = '';
+
+  const sys = `你是品牌小红书官号内容策划专家。你的任务是从推广 Brief 中提取官号可直接使用的文案创作知识。
+
+【核心原则】
+这是品牌官方账号，不是达人/素人账号。当前阶段只关注文案内容，不涉及配图和拍摄。
+
+【必须过滤掉的内容（不在输出中展示）】
+- 配图/图片/拍摄/摄影/视觉要求（如：图片≥15张、2look、光线要求等）
+- 对博主/达人/KOL的行为要求（如：发布时间、互动要求、粉丝画像）
+- 需要伪装素人的执行要求（如：自然露出、不明显推广、素人感）
+- 账号运营类要求（发布频次、账号定位等非文案内容）
+
+【输出内容只包含】
+- 文案角度、故事线、卖点表达方式
+- 官号发声的品牌调性和语气
+- 内容结构建议（开头/主体/结尾的文字逻辑）
+- 必须遵守的文案合规红线
+
+【绝对化表述判定原则】
+禁用类型——以下两类均属绝对化，在审核红线块中必须标注为"禁用"：
+1. 正向绝对功效：「出汗不粘身」「反复机洗不发黄」→ 改为「透气不闷热」「多次机洗保色性好」「耐洗耐磨」
+2. 直接否定式功效：「不褪色」「不变形」「不起球」「不串色」「不发灰」「不开裂」「不塌陷」→ 禁用
+   → 可替换为「不易褪色」「不易变形」「不易起球」（加"易"字后可接受）
+   → 或改为「保色性好」「抗皱性好」「耐洗耐磨」等正向描述
+注意：「不易X」形式（如「不易褪色」「不易变形」）是可接受的表达，不属于禁用范畴`;
+
+  const usr = `从以下 Brief 中提取官号内容知识，严格按格式输出，每块以【块名】开头：
+
+【品牌基础】
+品牌名、定位、核心理念、品牌口号（若有）
+
+【产品信息】
+每款产品的名称、规格、核心卖点（每款分行）
+
+【官号内容方向】
+对 Brief 中每个内容方向：
+1. 方向名称和描述
+   - 如涉及节日/季节性时效切入点（如父亲节、618、夏天），自动转化为长效场景（如：父亲节→父亲生日/送礼场景；夏日→日常清凉/长期护理），并在括号内注明"原Brief为季节性切入，已转为长效场景"
+2. 官号适用性判断（从以下3种选一）：
+   ✅ 官号直接适用：直接说明如何创作
+   ⚠️ 需调整为官号视角：说明原达人做法 → 给出官号改写思路
+   ❌ 不适用官号（仅限达人）：简短说明原因，不展开
+3. ⚠️/✅ 项给出具体的官号创作要点（场景、角度、语气建议）
+4. 素材依赖评估：
+   - 若该方向高度依赖视觉素材（如多套穿搭look、实测对比图、实验性拍摄），在末尾加注：「📷 素材提示：此方向需要[具体图片类型]，素材不足时优先选其他方向」
+   - 专业测评类方向（含涉感测实验、上身对比、多look展示等）：必须标注「⚠️ 素材依赖较高，需专业测评图/多角度实拍，素材不到位建议暂缓」
+   - 时尚穿搭/多look教学类方向：必须标注「⚠️ 素材依赖较高，需多套穿搭Look及全身照，素材不到位建议暂缓」
+   - 品牌叙事、送礼场景、产品故事等方向：标注「✦ 官号优选方向：对图片素材要求低，适合日常稳定发布」
+
+【必带卖点与标签】
+以下内容每篇文案均须包含，审核时将逐项核查：
+
+必提卖点（列出 Brief 要求必须提及的核心卖点，每条一行，格式：卖点名：具体说法）
+必带标签（列出全部必带 tag，格式：#标签名，标注哪些是必带/哪些是选带）
+
+【执行要求（官号版）】
+只提取文案层面的执行要求：
+- 内容结构比例（开篇/主体/结尾各自的文字重点，不涉及图片）
+- 文案字数建议（如有）
+- 注意：图片数量、拍摄要求、博主执行要求一律不写；标签已在「必带卖点与标签」块中列出，此处不重复
+
+【审核红线】
+明确禁止的表达、词汇、话术（含 Brief 规定的 + 官号通用红线），每条附上允许的替代方案
+
+Brief 原文：
+${text}`;
+
+  S.briefRaw = text;
+  let buf = '';
+  const streamEl = document.getElementById('brief-stream-box');
+  try {
+    await callAI(sys, usr, chunk => { buf += chunk; streamEl.textContent = buf; });
+    const parsed = parseBriefSections(buf);
+    S.brief = parsed;
+    try { localStorage.setItem(LS+'brief', JSON.stringify(parsed)); localStorage.setItem(LS+'brief_raw', text); } catch {}
+    renderBriefCards(parsed);
+    document.getElementById('brief-loading').style.display = 'none';
+    document.getElementById('brief-result').style.display = '';
+    toast('Brief 解析完成 ✓');
+  } catch (e) {
+    document.getElementById('brief-loading').style.display = 'none';
+    toast('解析失败：' + e.message);
+  }
+  btn.disabled = false; btn.textContent = '🧠 AI 拆解（官号视角）';
+}
+
+function parseBriefSections(text) {
+  const sections = ['品牌基础','产品信息','官号内容方向','必带卖点与标签','执行要求（官号版）','审核红线'];
+  const result = {};
+  for (let i = 0; i < sections.length; i++) {
+    const s = sections[i];
+    const start = text.indexOf(`【${s}】`);
+    if (start === -1) { result[s] = '未能提取'; continue; }
+    const cs = start + `【${s}】`.length;
+    let end = text.length;
+    for (let j = i+1; j < sections.length; j++) {
+      const ni = text.indexOf(`【${sections[j]}】`, cs);
+      if (ni !== -1) { end = ni; break; }
+    }
+    result[s] = text.slice(cs, end).trim();
+  }
+  return result;
+}
+
+function renderBriefCards(parsed) {
+  const get = k => parsed[k] || '未提取';
+  document.getElementById('bc-brand').innerHTML      = md(get('品牌基础'));
+  document.getElementById('bc-products').innerHTML   = md(get('产品信息'));
+  document.getElementById('bc-directions').innerHTML = md(get('官号内容方向'));
+  document.getElementById('bc-kpitags').innerHTML    = md(get('必带卖点与标签'));
+  document.getElementById('bc-execution').innerHTML  = md(get('执行要求（官号版）'));
+  document.getElementById('bc-redlines').innerHTML   = md(get('审核红线'));
+}
+
+function clearBrief() {
+  S.brief = null; S.briefRaw = '';
+  document.getElementById('brief-paste').value = '';
+  document.getElementById('brief-file-info').style.display = 'none';
+  document.getElementById('brief-result').style.display = 'none';
+  document.getElementById('brief-loading').style.display = 'none';
+  try { localStorage.removeItem(LS+'brief'); localStorage.removeItem(LS+'brief_raw'); } catch {}
+  toast('已清除');
+}
+
+// ══════════════════════════════════════════════
+// MODULE 2: 参考内容库
+// ══════════════════════════════════════════════
+let _refDir = '品牌', _refProd = '80支A款';
+function toggleRefDir(el) { document.querySelectorAll('[data-ref-dir]').forEach(e=>e.classList.remove('on')); el.classList.add('on'); _refDir=el.dataset.refDir; }
+function toggleRefProd(el) { document.querySelectorAll('[data-ref-prod]').forEach(e=>e.classList.remove('on')); el.classList.add('on'); _refProd=el.dataset.refProd; }
+
+function addRef() {
+  const content = document.getElementById('ref-content').value.trim();
+  if (!content) { toast('请输入文案内容'); return; }
+  S.refs.unshift({dir:_refDir, prod:_refProd, content, ts:Date.now()});
+  saveRefs(); document.getElementById('ref-content').value = '';
+  renderRefs(); renderRefSelect(); toast('已添加 ✓');
+}
+function deleteRef(idx) {
+  if (!confirm('确认删除？')) return;
+  S.refs.splice(idx,1); saveRefs(); renderRefs(); renderRefSelect(); toast('已删除');
+}
+function saveRefs() { try { localStorage.setItem(LS+'refs', JSON.stringify(S.refs)); } catch {} }
+
+function renderRefs() {
+  const list = document.getElementById('refs-list');
+  if (!S.refs.length) {
+    list.innerHTML = '<div class="empty-hint">参考库为空 · 管理员可在上方添加优质官号文案</div>'; return;
+  }
+  list.innerHTML = S.refs.map((r,i) => `
+    <div class="ref-item">
+      <div class="ref-item-meta">
+        <span class="ref-label">${esc(r.dir)}</span>
+        <span class="ref-label" style="background:rgba(100,116,139,.1);color:var(--sub)">${esc(r.prod)}</span>
+        <span style="font-size:11px;color:var(--sub);margin-left:auto">${new Date(r.ts).toLocaleDateString('zh-CN')}</span>
+      </div>
+      <div class="ref-body">${esc(r.content)}</div>
+      ${S.role==='admin'?`<button class="ref-del" onclick="deleteRef(${i})">✕</button>`:''}
+    </div>`).join('');
+}
+function renderRefSelect() {
+  const sel = document.getElementById('ref-select');
+  sel.innerHTML = '<option value="">— 不使用参考文案 —</option>' +
+    S.refs.map((r,i) => `<option value="${i}">[${esc(r.dir)}·${esc(r.prod)}] ${esc(r.content.slice(0,30))}…</option>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// MODULE 3: 文案生成
+// ══════════════════════════════════════════════
+function setDir(el) {
+  document.querySelectorAll('[data-dir]').forEach(e=>e.classList.remove('on')); el.classList.add('on');
+  S.currentDir = el.dataset.dir;
+  document.getElementById('dir-hint').textContent = DIR_HINTS[S.currentDir]||'';
+}
+function setProd(el) {
+  document.querySelectorAll('[data-prod]').forEach(e=>e.classList.remove('on')); el.classList.add('on');
+  S.currentProd = el.dataset.prod;
+  document.getElementById('prod-tag').textContent = PROD_TAGS[S.currentProd]||'#霞湖世家80支液氨棉T';
+}
+
+async function doGenerate() {
+  const btn = document.getElementById('gen-btn');
+  const output = document.getElementById('gen-output');
+  const card   = document.getElementById('gen-output-card');
+  btn.disabled = true; btn.textContent = '生成中…';
+  card.style.display = ''; output.textContent = '⏳ 正在生成…';
+
+  const extra    = document.getElementById('extra-req').value.trim();
+  const refPaste = document.getElementById('ref-paste').value.trim();
+  const refIdx   = document.getElementById('ref-select').value;
+  const refItem  = refIdx !== '' ? S.refs[parseInt(refIdx)] : null;
+  const refText  = refPaste || (refItem ? refItem.content : '');
+
+  const briefCtx = S.brief
+    ? `\n\n【品牌知识库（来自 Brief 解析）】\n品牌基础：${S.brief['品牌基础']||''}\n产品信息：${S.brief['产品信息']||''}\n必带卖点与标签：${S.brief['必带卖点与标签']||''}\n执行要求：${S.brief['执行要求（官号版）']||''}\n审核红线：${S.brief['审核红线']||''}`
+    : '';
+
+  const sys = `你是霞湖世家品牌小红书官方账号的专职内容创作者。
+
+【身份铁律——最高优先级，违反即重写】
+✦ 身份：霞湖世家品牌官号，以品牌方身份发声
+✦ 禁止一切素人/达人视角：
+  ❌ 禁止："我最近发现了…" / "我买了这件衣服之后…" / "真的被惊艳到了" / "宝藏品牌安利"
+  ✅ 允许："这件T恤，我们做了18个月" / "今年夏天，我们想给大家一个选择"
+✦ "我们"仅用于品牌集体发声，不用"我"的个人视角
+✦ 品牌调性：自信而克制，用事实和故事说话，不自夸
+
+【内容铁律】
+❌ 绝对化宣称：「洗两年不变形」→「不易变形」；「最好」「全网第一」→ 直接删除
+❌ 重复表达：「反复机洗」→「多次机洗」
+❌ 匠人情怀：「三十年匠心」「三代传承」→ 改为产品事实陈述
+❌ 性别限定：「男士」「男装」→ 改为「大家」或直接删去
+❌ 硬广话术：「今日最低价」「直播间疯抢」「扣1」→ 全部删除
+❌ 细节负面场景描述：「坐下肚子那圈勒出横纹」「见客户都要先拽一下衣服」→ 删除，改用正面卖点陈述
+❌ 卖点绝对化：
+  · 正向绝对禁用：「出汗不粘身」→「透气不闷热」；「反复机洗不发黄」→「多次机洗保色性好」
+  · 直接否定式禁用：「不褪色」「不变形」「不起球」「不串色」「不发灰」「不开裂」「不塌陷」→ 必须修改
+    ✓ 可改为加"易"字：「不易褪色」「不易变形」「不易起球」（可接受）
+    ✓ 或改为正向描述：「保色性好」「抗皱性好」「耐洗耐磨」（更自然）
+❌ 数据堆砌：直接罗列技术参数让消费者没有感觉 → 把数字转化为可感知的体验
+  · 「Qmax≥0.21」→「刚拿起来那一刻，凉意从指尖传来」
+  · 「4.0级新疆长绒棉」→「摸上去不是普通棉的那种粗」
+  · 「7A级抗菌」→「贴着皮肤穿一整天，依然清爽」
+  ✦ 数字可以存在，但必须有场景或感受作为载体，禁止裸露堆砌参数
+
+【格式要求】
+- 标题 ≤20字，有吸引力，体现品牌调性
+- 正文分段清晰，每段有明确重点
+- 结尾附标签：#霞湖世家 + 产品专属标签 + #百搭穿搭
+
+【A/B款说明】
+- 默认不区分 A/B 款，统称产品名即可
+- 仅当补充要求中明确指定"A款"或"B款"，或内容方向为强品且涉及版型/廓形讨论时，才在文案中区分
+- A款为宽松版型，B款为修身版型${briefCtx}`;
+
+  const imitateBlock = refText ? `【强仿写指令——有参考文案时优先级最高，高于一切】
+1. 自动判断参考笔记类型（随手po / 情绪感慨 / 科普干货 / 测评 / 大字报），按该类型风格仿写
+2. 段落数量必须与参考笔记完全一致，禁止新增或删减段落
+3. 每段字数与参考笔记相近（允许±15%浮动）
+4. 每段的话题 / 情绪 / 重点与参考笔记对应，仅将主题替换为霞湖世家官号视角
+5. 句子完全重写（品牌官号视角），骨架与情绪节奏不动
+6. 当照搬句式会导致语句别扭时，以自然表达为准，结构形似即可
+
+参考文案：
+---
+${refText}
+---
+
+` : '';
+
+  const usr = `${imitateBlock}请以霞湖世家品牌官号视角生成一篇小红书图文帖子。
+
+内容方向：${S.currentDir}
+方向说明：${DIR_HINTS[S.currentDir]}
+结尾引流规则：${DIR_CTA[S.currentDir]}
+主推产品：${S.currentProd}
+${extra ? `\n本次补充要求：${extra}` : ''}
+
+必须包含标签（四个全部必带）：#霞湖世家 + ${PROD_TAGS[S.currentProd]||'#霞湖世家80支液氨棉T'} + #通勤穿搭 + #百搭穿搭
+
+直接输出帖子（标题 + 正文 + 标签），不要任何前置说明。`;
+
+  S.gen = '';
+  try {
+    await callAI(sys, usr, chunk => { S.gen += chunk; output.innerHTML = md(S.gen); });
+    S.currentAiDraft = S.gen;
+    toast('生成完成 ✓');
+  } catch (e) {
+    output.textContent = '生成失败：' + e.message; toast('生成失败');
+  }
+  btn.disabled = false; btn.textContent = '✨ 生成文案';
+}
+
+function copyGen() {
+  if (!S.gen) { toast('暂无内容'); return; }
+  navigator.clipboard.writeText(S.gen).then(()=>toast('已复制 ✓')).catch(()=>toast('请手动复制'));
+}
+function clearGen() {
+  S.gen = ''; S.currentAiDraft = '';
+  document.getElementById('gen-output').textContent = '';
+  document.getElementById('gen-output-card').style.display = 'none';
+  document.getElementById('extra-req').value = '';
+  document.getElementById('ref-paste').value = '';
+}
+function sendToReview() {
+  if (!S.gen) { toast('请先生成文案'); return; }
+  document.getElementById('review-input').value = S.gen;
+  navigate('review'); toast('已发送到审核台');
+}
+
+// ══════════════════════════════════════════════
+// MODULE 4: 审核工作台
+// ══════════════════════════════════════════════
+async function doAIReview() {
+  const input = document.getElementById('review-input').value.trim();
+  if (!input) { toast('请输入待审核文案'); return; }
+  const btn = document.getElementById('review-btn');
+  btn.disabled = true; btn.textContent = '审核中…';
+  document.getElementById('review-result-area').style.display = '';
+  document.getElementById('r-score').textContent = '…';
+  document.getElementById('r-verdict').textContent = '判定中';
+  document.getElementById('r-verdict').className = 'verdict-badge';
+  document.getElementById('review-output').textContent = '⏳ AI 正在审核…';
+
+  const briefRedlines = S.brief?.['审核红线'] || '';
+  const briefKpiTags  = S.brief?.['必带卖点与标签'] || '';
+  const briefCtx = (briefRedlines || briefKpiTags) ? `\n\n【Brief 规定的审核要求】\n${briefKpiTags ? '必带卖点与标签（逐项核查是否缺失，缺一项 -10分）：\n' + briefKpiTags + '\n\n' : ''}${briefRedlines ? '审核红线：\n' + briefRedlines : ''}` : '';
+
+  const sys = `你是霞湖世家官号内容审核专家，专门审核小红书图文是否符合官号发布标准。`;
+  const usr = `审核以下霞湖世家官号文案，逐条检查所有问题。
+
+【审核维度】
+
+一票否决（发现任一 → 结论必须为「需修改」或「不合格」）：
+❌ 素人/达人视角：「我发现」「我买了」「真的被惊艳」「宝藏」「安利」等（-30分）
+❌ 绝对化宣称：「洗两年」「最好」「全网第一」「第一」（-20分）
+❌ 性别限定词：「男士」「男装」「男性」（-15分）
+❌ 硬广话术：「今日最低价」「直播间疯抢」「扣1」（-25分）
+❌ 匠人滥用：「三十年匠心」「三代传承」「几十年」（-20分）
+❌ 细节负面场景（-15分）：「坐下勒出横纹」「见客户拽衣服」等令人联想到负面/尴尬场景的表达
+❌ 卖点绝对化（-15分）：
+  · 正向绝对：「出汗不粘身」「反复机洗不发黄」→ 改为「透气不闷热」「多次机洗保色性好」
+  · 直接否定式：「不褪色」「不变形」「不起球」「不串色」「不发灰」「不开裂」「不塌陷」→ 禁用
+  · 注意：「不易褪色」「不易变形」「不易起球」（含"易"字）是可接受表达，不扣分
+
+附加扣分：
+- 标题超过20字：-5分
+- 重复表达（如「反复机洗」）：-5分/处
+- 缺少 #霞湖世家 标签：-10分
+- 缺少产品专属标签：-10分
+- 引流结尾语气过硬：-10分${briefCtx}
+
+【输出格式】
+评分：XX分
+结论：合格 / 需修改 / 不合格
+一句话评价：（总结）
+
+## 详细审核报告
+（逐条列出问题，每条格式：
+▸ 问题类型
+▸ 原文：「具体问题句子」
+▸ 建议改为：「具体改写文字」）
+
+## 总体改写建议
+（综合建议，如问题较多给出修改思路）
+
+待审核文案：
+${input}`;
+
+  S.reviewBuf = '';
+  try {
+    await callAI(sys, usr, chunk => {
+      S.reviewBuf += chunk;
+      renderReviewResult(S.reviewBuf);
+    });
+    S.currentAiReview = S.reviewBuf;
+    // 提取分数
+    const sm = S.reviewBuf.match(/评分[：:]\s*(\d+)/);
+    S.currentAiScore = sm ? parseInt(sm[1]) : 0;
+    toast('审核完成，正在生成修改稿…');
+
+    // AI 自动生成修改稿（使用与文案生成完全一致的品牌规则 + 审核报告约束）
+    const draftEl = document.getElementById('my-draft');
+    if (draftEl) {
+      draftEl.value = '⏳ AI 正在根据审核报告生成修改稿…';
+      draftEl.disabled = true;
+
+      // 重建与生成文案相同的 briefCtx
+      const rwBriefCtx = S.brief
+        ? `\n\n【品牌知识库（来自 Brief 解析）】\n品牌基础：${S.brief['品牌基础']||''}\n产品信息：${S.brief['产品信息']||''}\n必带卖点与标签：${S.brief['必带卖点与标签']||''}\n执行要求：${S.brief['执行要求（官号版）']||''}\n审核红线：${S.brief['审核红线']||''}`
+        : '';
+
+      // 与文案生成一致的完整品牌规则 + 重写任务说明
+      const rwSys = `你是霞湖世家品牌小红书官方账号的专职内容创作者。
+
+【身份铁律——最高优先级，违反即重写】
+✦ 身份：霞湖世家品牌官号，以品牌方身份发声
+✦ 禁止一切素人/达人视角：
+  ❌ 禁止："我最近发现了…" / "我买了这件衣服之后…" / "真的被惊艳到了" / "宝藏品牌安利"
+  ✅ 允许："这件T恤，我们做了18个月" / "今年夏天，我们想给大家一个选择"
+✦ "我们"仅用于品牌集体发声，不用"我"的个人视角
+✦ 品牌调性：自信而克制，用事实和故事说话，不自夸
+
+【内容铁律】
+❌ 绝对化宣称：「洗两年不变形」→「不易变形」；「最好」「全网第一」→ 直接删除
+❌ 重复表达：「反复机洗」→「多次机洗」
+❌ 匠人情怀：「三十年匠心」「三代传承」→ 改为产品事实陈述
+❌ 性别限定：「男士」「男装」→ 改为「大家」或直接删去
+❌ 硬广话术：「今日最低价」「直播间疯抢」「扣1」→ 全部删除
+❌ 细节负面场景描述：「坐下肚子那圈勒出横纹」「见客户都要先拽一下衣服」→ 删除，改用正面卖点陈述
+❌ 卖点绝对化：
+  · 正向绝对禁用：「出汗不粘身」→「透气不闷热」；「反复机洗不发黄」→「多次机洗保色性好」
+  · 直接否定式禁用：「不褪色」「不变形」「不起球」「不串色」「不发灰」「不开裂」「不塌陷」→ 必须修改
+    ✓ 可改为加"易"字：「不易褪色」「不易变形」「不易起球」（可接受）
+    ✓ 或改为正向描述：「保色性好」「抗皱性好」「耐洗耐磨」（更自然）
+❌ 数据堆砌：直接罗列技术参数让消费者没有感觉 → 把数字转化为可感知的体验
+  ✦ 数字可以存在，但必须有场景或感受作为载体，禁止裸露堆砌参数
+
+【A/B款说明】
+- 默认不区分 A/B 款，统称产品名即可
+- 强品方向且文案中提及版型/廓形时：用一句话带过「备有 A/B 两款版型，宽松或修身都有，适合不同身材」，不展开具体描述
+- 仅当补充要求中明确指定"A款"或"B款"时，才单独展开某款的版型细节；A款为宽松版型，B款为修身版型
+
+【本次任务：审核后重写】
+你收到了一篇文案和它的 AI 审核报告。你的任务是重新创作一篇完整修改稿：
+- 审核报告中每一条问题，无论是一票否决项还是附加扣分项，全部必须解决
+- 某段有根本性问题时整段重写，不要只改几个字
+- 保留原文值得保留的结构和叙事亮点
+- 输出质量不得低于原文，修改稿必须能通过同一套审核标准
+- 只输出完整文案（标题+正文+标签），不要任何说明或前缀${rwBriefCtx}`;
+
+      const rwUsr = `【原文】
+${input}
+
+【AI审核报告（必须逐条解决全部问题）】
+${S.reviewBuf}
+
+【创作参数】
+内容方向：${S.currentDir || '品牌'}
+主推产品：${S.currentProd || '80支液氨棉T恤'}
+必须包含标签（四个全部必带）：#霞湖世家 + ${PROD_TAGS[S.currentProd]||'#霞湖世家80支液氨棉T'} + #通勤穿搭 + #百搭穿搭
+
+请生成修改稿，确保审核报告中每一条问题都已修复，直接输出完整文案。`;
+
+      let rwBuf = '';
+      try {
+        await callAI(rwSys, rwUsr, chunk => { rwBuf += chunk; draftEl.value = rwBuf; });
+        toast('修改稿已生成，请在此基础上继续修改 ✓');
+      } catch (e) {
+        draftEl.value = input;
+        toast('修改稿生成失败，已填入原文');
+      }
+      draftEl.disabled = false;
+    }
+  } catch (e) {
+    document.getElementById('review-output').textContent = '审核失败：' + e.message; toast('审核失败');
+  }
+  btn.disabled = false; btn.textContent = '🔍 开始审核';
+}
+
+function renderReviewResult(txt) {
+  const sm = txt.match(/评分[：:]\s*(\d+)/);
+  const vm = txt.match(/结论[：:]\s*(合格|需修改|不合格)/);
+  if (sm) document.getElementById('r-score').textContent = sm[1];
+  if (vm) {
+    const v = vm[1], el = document.getElementById('r-verdict');
+    el.textContent = v;
+    el.className = 'verdict-badge ' + (v==='合格'?'verdict-pass':v==='需修改'?'verdict-revise':'verdict-fail');
+  }
+  document.getElementById('review-output').innerHTML = md(txt);
+}
+function copyReview() {
+  if (!S.reviewBuf) { toast('暂无审核报告'); return; }
+  navigator.clipboard.writeText(S.reviewBuf).then(()=>toast('审核报告已复制 ✓')).catch(()=>toast('请手动复制'));
+}
+
+// ── 写手提交系统 ──
+function submitArticle() {
+  const humanDraft = document.getElementById('my-draft').value.trim();
+  if (!humanDraft) { toast('请先填写修改稿'); return; }
+
+  const humanScoreVal = parseInt(document.getElementById('human-score')?.value || '0') || 0;
+  const entry = {
+    id: Date.now(),
+    submittedAt: new Date().toLocaleString('zh-CN',{hour12:false}),
+    direction: S.currentDir || '—',
+    product: S.currentProd || '—',
+    aiDraft: S.currentAiDraft || '（未记录，直接粘贴审核）',
+    aiScore: S.currentAiScore || 0,
+    humanScore: humanScoreVal,
+    aiReview: S.currentAiReview || '（未记录）',
+    humanDraft,
+  };
+  S.submissions.push(entry);
+  // 保存
+  const subKey = S.role === 'writerA' ? LS+'sub_a' : LS+'sub_b';
+  try { localStorage.setItem(subKey, JSON.stringify(S.submissions)); } catch {}
+  // 清空准备下一篇
+  document.getElementById('my-draft').value = '';
+  S.currentAiDraft = ''; S.currentAiReview = ''; S.currentAiScore = 0;
+  const hsEl = document.getElementById('human-score');
+  if (hsEl) hsEl.value = '';
+  document.getElementById('review-input').value = '';
+  document.getElementById('review-result-area').style.display = 'none';
+  renderSubList();
+  toast(`已提交第 ${S.submissions.length} 篇 ✓`);
+}
+
+function renderSubList() {
+  const wrap = document.getElementById('sub-list-wrap');
+  const list  = document.getElementById('sub-list');
+  const countEl = document.getElementById('sub-count');
+  const exportSec = document.getElementById('export-section');
+  if (!S.submissions.length) {
+    if (wrap) wrap.style.display = 'none';
+    if (exportSec) exportSec.style.display = 'none';
+    if (countEl) countEl.textContent = '0';
+    return;
+  }
+  if (countEl) countEl.textContent = S.submissions.length;
+  if (wrap) wrap.style.display = '';
+  if (exportSec) exportSec.style.display = '';
+  list.innerHTML = S.submissions.map((e,i) => `
+    <div class="sub-item">
+      <div class="sub-item-num">${i+1}</div>
+      <div class="sub-item-info">
+        <div style="font-size:12px;font-weight:600">${esc(e.direction)} · ${esc(e.product)}</div>
+        <div class="sub-item-meta">${esc(e.submittedAt)}</div>
+      </div>
+      <div class="sub-item-score">${e.aiScore ? e.aiScore+'分' : '—'}</div>
+      <button class="btn-ghost btn-sm" onclick="deleteSubmission(${i})" style="margin-left:4px">删除</button>
+    </div>`).join('');
+}
+
+function deleteSubmission(idx) {
+  if (!confirm(`删除第 ${idx+1} 篇的提交记录？`)) return;
+  S.submissions.splice(idx,1);
+  const subKey = S.role==='writerA' ? LS+'sub_a' : LS+'sub_b';
+  try { localStorage.setItem(subKey, JSON.stringify(S.submissions)); } catch {}
+  renderSubList(); toast('已删除');
+}
+
+function clearSubmissions() {
+  if (!confirm('确认清空所有提交记录？导出后再清空。')) return;
+  S.submissions = [];
+  const subKey = S.role==='writerA' ? LS+'sub_a' : LS+'sub_b';
+  try { localStorage.setItem(subKey, '[]'); } catch {}
+  renderSubList(); toast('已清空');
+}
+
+function autoSaveDraft() {
+  const val = document.getElementById('my-draft').value;
+  const key = S.role==='writerA' ? LS+'draft_a' : LS+'draft_b';
+  try { localStorage.setItem(key, val); } catch {}
+  const tip = document.getElementById('draft-saved-tip');
+  if (tip) { tip.style.display=''; setTimeout(()=>tip.style.display='none',2000); }
+}
+
+function exportDailyRecords() {
+  if (!S.submissions.length) { toast('暂无提交记录'); return; }
+  const writerName = S.role==='writerA' ? '写手A' : '写手B';
+  const today = new Date().toLocaleDateString('zh-CN');
+  let out = `霞湖世家官号内容 · ${writerName}评审记录\n日期：${today}\n共 ${S.submissions.length} 篇\n\n`;
+  S.submissions.forEach((e,i) => {
+    out += `${'═'.repeat(45)}\n`;
+    out += `第 ${i+1} 篇 | ${e.direction} | ${e.product} | ${e.submittedAt}\n`;
+    out += `${'═'.repeat(45)}\n\n`;
+    out += `【AI 生成稿】\n${e.aiDraft}\n\n`;
+    out += `【AI 审核报告】（AI评分：${e.aiScore}分 | 人工评分：${e.humanScore||'未填'}分）\n${e.aiReview}\n\n`;
+    out += `【人工修改稿】\n${e.humanDraft}\n\n`;
+  });
+  const blob = new Blob([out],{type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `霞湖世家_${writerName}_${today.replace(/\//g,'-')}.txt`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast(`已导出 ${S.submissions.length} 篇记录 ✓`);
+}
+
+// ── 管理员双稿对比 ──
+async function doCompare() {
+  const draftA = document.getElementById('draft-a').value.trim();
+  const draftB = document.getElementById('draft-b').value.trim();
+  if (!draftA || !draftB) { toast('请分别粘入写手A和写手B的草稿'); return; }
+  const btn = document.getElementById('compare-btn');
+  btn.disabled = true; btn.textContent = '分析中…';
+  document.getElementById('compare-result').style.display = '';
+  document.getElementById('compare-output').textContent = '⏳ AI 正在对比分析…';
+
+  const briefCtx = S.briefRaw ? `\n\n【Brief 参考】\n${S.briefRaw.slice(0,2000)}` : '';
+  const sys = `你是霞湖世家品牌官号内容负责人，负责评选最终发布稿并指导下一轮优化方向。`;
+  const usr = `对比以下两份霞湖世家官号修改稿，给出专业评选意见。${briefCtx}
+
+【写手A修改稿】
+${draftA}
+
+【写手B修改稿】
+${draftB}
+
+请输出：
+
+## 综合对比评估
+
+| 维度 | 写手A | 写手B |
+|------|-------|-------|
+| 官号调性符合度 | | |
+| 合规性（无红线违规） | | |
+| 标题吸引力 | | |
+| 卖点表达清晰度 | | |
+| 引流结尾自然度 | | |
+
+## 写手A亮点
+（值得保留的句子/结构）
+
+## 写手B亮点
+（值得保留的句子/结构）
+
+## 各自问题点
+（引用具体原文，说明问题）
+
+## 推荐融合思路
+（如何结合两份稿子的优点）
+
+## 结论
+建议以【A/B/重新撰写】为基础，原因：…`;
+
+  let buf = '';
+  try {
+    await callAI(sys, usr, chunk => { buf += chunk; document.getElementById('compare-output').innerHTML = md(buf); });
+    toast('对比分析完成 ✓');
+  } catch (e) {
+    document.getElementById('compare-output').textContent = '分析失败：' + e.message; toast('分析失败');
+  }
+  btn.disabled = false; btn.textContent = '⚖️ AI 对比分析';
+}
+function copyCompare() {
+  const el = document.getElementById('compare-output');
+  const t = el.textContent || el.innerText || '';
+  if (!t) { toast('暂无内容'); return; }
+  navigator.clipboard.writeText(t).then(()=>toast('已复制 ✓')).catch(()=>toast('请手动复制'));
+}
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+function md(s) {
+  if (!s) return '';
+  return s
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.+?)`/g,'<code>$1</code>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^[-•] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, ms=2200) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), ms);
+}
+</script>
+</body>
+</html>
