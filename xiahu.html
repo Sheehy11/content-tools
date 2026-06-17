@@ -208,6 +208,56 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
 </style>
 </head>
 <body>
+<!-- ══ PASSWORD GATE ══ -->
+<div id="pw-gate" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0F172A 0%,#1D4ED8 100%);display:flex;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:40px 36px;width:320px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center">
+    <div style="font-size:32px;margin-bottom:10px">🔒</div>
+    <div style="font-size:18px;font-weight:700;color:#0F172A;margin-bottom:4px">霞湖世家</div>
+    <div style="font-size:13px;color:#64748B;margin-bottom:28px">官号内容工具 · 内部访问</div>
+    <div style="position:relative;margin-bottom:10px">
+      <input id="pw-input" type="password" placeholder="请输入访问密码"
+        style="width:100%;padding:12px 42px 12px 14px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:15px;outline:none;transition:border .2s;font-family:inherit"
+        onfocus="this.style.borderColor='#1D4ED8'"
+        onblur="this.style.borderColor='#E2E8F0'"
+        onkeydown="if(event.key==='Enter')pwCheck()">
+      <button onclick="pwToggle()" tabindex="-1"
+        style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:#94A3B8;padding:4px"
+        id="pw-eye">👁</button>
+    </div>
+    <div id="pw-err" style="color:#EF4444;font-size:12px;margin-bottom:12px;min-height:16px"></div>
+    <button onclick="pwCheck()"
+      style="width:100%;padding:13px;background:linear-gradient(120deg,#1D4ED8,#3B82F6);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.3px;font-family:inherit">
+      进入工具
+    </button>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('xhsj_unlocked')==='1'){
+    document.getElementById('pw-gate').style.display='none';
+  }
+  window.pwCheck=function(){
+    const v=document.getElementById('pw-input').value;
+    if(v==='Success2026@'){
+      sessionStorage.setItem('xhsj_unlocked','1');
+      const g=document.getElementById('pw-gate');
+      g.style.transition='opacity .4s';g.style.opacity='0';
+      setTimeout(()=>g.style.display='none',400);
+    } else {
+      const e=document.getElementById('pw-err');
+      const i=document.getElementById('pw-input');
+      e.textContent='密码错误，请重试';
+      i.style.borderColor='#EF4444';i.value='';i.focus();
+      setTimeout(()=>{e.textContent='';i.style.borderColor='#E2E8F0';},2500);
+    }
+  };
+  window.pwToggle=function(){
+    const i=document.getElementById('pw-input');
+    i.type=i.type==='password'?'text':'password';
+    document.getElementById('pw-eye').textContent=i.type==='password'?'👁':'🙈';
+  };
+})();
+</script>
 
 <!-- ── 角色选择弹窗（首次） ── -->
 <div id="role-modal" class="modal-overlay">
