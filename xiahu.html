@@ -601,7 +601,7 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
         <!-- 导出区 -->
         <div class="export-section" id="export-section" style="display:none">
           <h4>📤 每日导出</h4>
-          <p>包含：AI原始稿 + AI审核报告 + 人工修改稿，发给管理员用于优化</p>
+          <p>包含：AI审核报告 + AI修改稿 + 人工修改稿（三段对比），发给管理员用于分析优化方向</p>
           <div class="btn-row">
             <button class="btn-sec" onclick="exportDailyRecords()">导出今日全部记录</button>
             <button class="btn-ghost btn-sm" onclick="clearSubmissions()">清空记录</button>
@@ -666,8 +666,9 @@ const S = {
   currentDir: '品牌',
   currentProd: '80支液氨棉T恤（A款）',
   gen: '',
-  currentAiDraft: '',   // AI 生成的原始稿（用于提交记录）
-  currentAiReview: '',  // AI 审核报告（用于提交记录）
+  currentAiDraft: '',   // AI 第一版生成稿
+  currentAiRewrite: '', // AI 审核后重写稿（对比基准）
+  currentAiReview: '',  // AI 审核报告
   currentAiScore: 0,
   reviewBuf: '',
   submissions: [],      // 当天已提交的篇目
@@ -1334,6 +1335,7 @@ ${S.reviewBuf}
       let rwBuf = '';
       try {
         await callAI(rwSys, rwUsr, chunk => { rwBuf += chunk; draftEl.value = rwBuf; });
+        S.currentAiRewrite = rwBuf.trim();
         toast('修改稿已生成，请在此基础上继续修改 ✓');
       } catch (e) {
         draftEl.value = input;
@@ -1374,7 +1376,8 @@ function submitArticle() {
     submittedAt: new Date().toLocaleString('zh-CN',{hour12:false}),
     direction: S.currentDir || '—',
     product: S.currentProd || '—',
-    aiDraft: S.currentAiDraft || '（未记录，直接粘贴审核）',
+    aiDraft: S.currentAiDraft || '（未记录）',
+    aiRewrite: S.currentAiRewrite || '（未生成，写手直接修改原稿）',
     aiScore: S.currentAiScore || 0,
     humanScore: humanScoreVal,
     aiReview: S.currentAiReview || '（未记录）',
@@ -1386,7 +1389,7 @@ function submitArticle() {
   try { localStorage.setItem(subKey, JSON.stringify(S.submissions)); } catch {}
   // 清空准备下一篇
   document.getElementById('my-draft').value = '';
-  S.currentAiDraft = ''; S.currentAiReview = ''; S.currentAiScore = 0;
+  S.currentAiDraft = ''; S.currentAiRewrite = ''; S.currentAiReview = ''; S.currentAiScore = 0;
   const hsEl = document.getElementById('human-score');
   if (hsEl) hsEl.value = '';
   document.getElementById('review-input').value = '';
@@ -1454,9 +1457,12 @@ function exportDailyRecords() {
     out += `${'═'.repeat(45)}\n`;
     out += `第 ${i+1} 篇 | ${e.direction} | ${e.product} | ${e.submittedAt}\n`;
     out += `${'═'.repeat(45)}\n\n`;
-    out += `【AI 生成稿】\n${e.aiDraft}\n\n`;
     out += `【AI 审核报告】（AI评分：${e.aiScore}分 | 人工评分：${e.humanScore||'未填'}分）\n${e.aiReview}\n\n`;
-    out += `【人工修改稿】\n${e.humanDraft}\n\n`;
+    out += `${'─'.repeat(40)}\n`;
+    out += `【AI 修改稿】（对比基准）\n${e.aiRewrite||e.aiDraft}\n\n`;
+    out += `【人工修改稿】（写手在AI修改稿基础上的改动）\n${e.humanDraft}\n\n`;
+    out += `${'─'.repeat(40)}\n`;
+    out += `【AI 原始生成稿】（参考）\n${e.aiDraft}\n\n`;
   });
   const blob = new Blob([out],{type:'text/plain;charset=utf-8'});
   const a = document.createElement('a');
