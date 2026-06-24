@@ -320,7 +320,7 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
   <aside>
     <div class="sb-header">
       <div class="sb-title">霞湖世家</div>
-      <div class="sb-sub">80支 / 200支液氨棉</div>
+      <div class="sb-sub">80支 / 120支 / 200支液氨棉</div>
     </div>
     <nav class="sb-nav">
       <div class="sb-section">工作流</div>
@@ -345,76 +345,42 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
     <div class="page" id="page-brief">
       <div class="page-hd">
         <h2>📋 Brief 解析</h2>
-        <p>上传霞湖世家推广 Brief，AI 自动提取官号可用的创作知识（过滤达人专属内容）</p>
+        <p>霞湖世家官号内容创作参考——三款产品信息、写作规范与审核红线</p>
       </div>
 
       <div class="card">
-        <div class="card-hd"><div class="step">1</div><h3>上传 Brief 文件</h3></div>
-        <div class="upload-zone" id="brief-upload-zone"
-          ondragover="event.preventDefault();this.classList.add('drag')"
-          ondragleave="this.classList.remove('drag')"
-          ondrop="event.preventDefault();this.classList.remove('drag');handleBriefFile(event.dataTransfer.files[0])">
-          <div class="uz-icon">📄</div>
-          <div>拖入 <strong>.md / .txt</strong> 文件，或
-            <label style="color:var(--g1);cursor:pointer;font-weight:600">点击选择
-              <input type="file" accept=".md,.txt" style="display:none" onchange="handleBriefFile(this.files[0])">
-            </label>
+        <div class="card-hd">
+          <div class="step">✓</div>
+          <h3>创作参考知识（官号专属版）</h3>
+        </div>
+        <div class="brief-grid">
+          <div class="brief-card">
+            <div class="brief-card-title">🏷️ 品牌基础</div>
+            <div class="brief-card-body">品牌：霞湖世家<br>定位：以棉纱支数定义品质段位，深耕基础T恤赛道<br>核心理念：技术下放——高奢液氨冷萃工艺引入基础款T恤<br>受众：25-45岁，注重品质，有一定消费能力<br>口吻：自信克制，以产品事实说话，不自夸<br><br><strong>品牌禁忌：</strong><br>❌「我们不…」句式（变相邀功）<br>❌「霞湖世家告诉我们/答案是/认为/选择了…」（宏大叙事）<br>❌ 以年数/历史标榜品质<br>❌ 性别词（男士/男装）<br>❌ 时效节日名（父亲节等）</div>
           </div>
-          <div style="font-size:11px;color:var(--sub);margin-top:6px">PDF/Word 请先导出为文本</div>
-        </div>
-        <div id="brief-file-info" style="display:none;margin-top:10px;font-size:12px;color:var(--ok)"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-hd"><div class="step">或</div><h3>直接粘贴 Brief 内容</h3></div>
-        <textarea id="brief-paste" class="fi" style="min-height:160px" placeholder="将 Brief 全文粘贴至此处..."></textarea>
-        <div class="btn-row" style="margin-top:12px">
-          <button class="btn-pri" id="brief-parse-btn" onclick="doBriefParse()">🧠 AI 拆解（官号视角）</button>
-          <button class="btn-ghost btn-sm" onclick="clearBrief()">清除</button>
-        </div>
-      </div>
-
-      <!-- 加载中 -->
-      <div id="brief-loading" style="display:none">
-        <div class="card">
-          <div style="color:var(--sub);font-size:13px">⏳ AI 正在拆解 Brief，提取官号可用内容…</div>
-          <div class="output-box" id="brief-stream-box" style="margin-top:8px;min-height:60px"></div>
-        </div>
-      </div>
-
-      <!-- 结果 -->
-      <div id="brief-result" style="display:none">
-        <div class="card">
-          <div class="card-hd">
-            <div class="step">✓</div>
-            <h3>官号创作知识（已过滤达人专属内容）</h3>
-            <button class="btn-ghost btn-sm" onclick="clearBrief()" style="margin-left:auto">重新解析</button>
+          <div class="brief-card">
+            <div class="brief-card-title">📝 内容方向规范</div>
+            <div class="brief-card-body"><strong>品牌方向：</strong>以产品事实切入→延伸品牌态度；落脚点在消费者，不在品牌付出；产品描述与品牌理念约1:1篇幅<br><br><strong>强品方向：</strong>开篇须有清晰场景锚点（如「连续三天出差」「户外直晒两小时」）；产品为主语，不出现"我们"；最多三个卖点+逻辑链（为什么好→消费者感知→具体场景）；禁品牌研发/成本叙事<br><br><strong>通用：</strong>语气贯穿全文；禁照搬参考文案消费者画像；每段之间空一行</div>
           </div>
-          <div class="brief-grid">
-            <div class="brief-card">
-              <div class="brief-card-title">🏷️ 品牌基础</div>
-              <div class="brief-card-body" id="bc-brand">-</div>
-            </div>
-            <div class="brief-card">
-              <div class="brief-card-title">📦 产品信息</div>
-              <div class="brief-card-body" id="bc-products">-</div>
-            </div>
-            <div class="brief-card" style="grid-column:1/-1">
-              <div class="brief-card-title">🎯 官号内容方向（已标注适用性）</div>
-              <div id="bc-directions" class="brief-card-body">-</div>
-            </div>
-            <div class="brief-card" style="grid-column:1/-1">
-              <div class="brief-card-title">✅ 必带卖点与标签</div>
-              <div class="brief-card-body" id="bc-kpitags">-</div>
-            </div>
-            <div class="brief-card">
-              <div class="brief-card-title">📐 执行要求（官号版）</div>
-              <div class="brief-card-body" id="bc-execution">-</div>
-            </div>
-            <div class="brief-card">
-              <div class="brief-card-title">🚫 审核红线</div>
-              <div class="brief-card-body" id="bc-redlines">-</div>
-            </div>
+          <div class="brief-card">
+            <div class="brief-card-title">📦 80支液氨棉T恤（黄金区间）</div>
+            <div class="brief-card-body">顺滑有丝感，棉的温润手感；性价比高，质感对标五六百元轻奢<br>液氨处理带来持久凉感（纤维结构改变，非涂层）<br>抗皱保形 / 保色耐洗 / 不粘毛<br><br><strong>版型：</strong>A款（宽松）+ B款（修身）；涉及版型必须A和B同时提，严禁只写一款<br><br><strong>必带标签（4固定+6变量=10个）：</strong><br>#霞湖世家 &nbsp;#霞湖世家80支液氨棉T &nbsp;#通勤穿搭 &nbsp;#百搭穿搭</div>
+          </div>
+          <div class="brief-card">
+            <div class="brief-card-title">🆕 120支液氨棉T恤（凉感进阶·防蚊防晒）</div>
+            <div class="brief-card-body">棉盖丝工艺：表面棉（光泽感）+ 里面索罗拉（冰凉舒适）；棉纱极细，触感丝滑，自带光泽<br>液氨处理，三款中夏日体感最凉<br><br><strong>⭐ 独家——抑菌防蚊</strong>（80/200支无此功能）：物理防蚊+抗菌，夏季出汗依然清爽无异味<br><strong>防晒 UPF50+</strong>：遮热效果好，阳光直射不怕热<br>不易变形 / 亨斯曼染料保色（白色不易发黄）<br><br><strong>版型：</strong>正肩合身，仅一款，无A/B之分<br><br><strong>必带标签（4固定+6变量=10个）：</strong><br>#霞湖世家 &nbsp;#霞湖世家120支液氨棉T恤 &nbsp;#通勤穿搭 &nbsp;#百搭穿搭<br><br>⚠️ 禁邀功：防蚊/防晒只说产品功能，不写"我们特别加入了…"</div>
+          </div>
+          <div class="brief-card">
+            <div class="brief-card-title">💎 200支液氨棉T恤（奢华体验）</div>
+            <div class="brief-card-body">超高支数，极致丝滑、面料紧实；手感接近高档衬衫<br>以前只有高端奢侈品牌才用这个规格，属于顶级面料<br>透气性略低于80支，定价更高<br><br><strong>写作角度：</strong>大牌工艺平替 / 高端送礼 / 对面料有讲究的人<br><br><strong>版型：</strong>默认不区分，统称产品名即可<br><br><strong>必带标签（4固定+6变量=10个）：</strong><br>#霞湖世家 &nbsp;#霞湖世家200支液氨棉T恤 &nbsp;#通勤穿搭 &nbsp;#百搭穿搭</div>
+          </div>
+          <div class="brief-card">
+            <div class="brief-card-title">⚠️ 内容铁律（一票否决或扣分）</div>
+            <div class="brief-card-body">❌ 绝对化：「不褪色/不变形/出汗不粘身」→「不易褪色/不易变形/透气不闷热」<br>❌ 数据堆砌：Qmax/支数等裸露技术参数 → 转化为体感描述<br>❌ 逻辑断裂：「不是A是B」中A和B必须在同一描述维度<br>❌ 生造词语：「低温柔和感/通勤季/散干净/安静的高级感」等自创词一律不用<br>❌ 无来源数字：「洗了八十次」→ 只用真实测试数据<br>❌ 反向讲卖点：「我们不做无法兑现的承诺」→ 直接讲产品事实<br>❌ 硬广话术：「今日最低价/扣1/直播间疯抢」</div>
+          </div>
+          <div class="brief-card">
+            <div class="brief-card-title">🚫 审核红线（扣分标准）</div>
+            <div class="brief-card-body">素人/达人视角 &nbsp;−30分<br>硬广话术 &nbsp;−25分<br>绝对化宣称 &nbsp;−20分<br>匠人情怀/年数标榜 &nbsp;−20分<br>性别限定词 &nbsp;−15分<br>细节负面场景 &nbsp;−15分<br>卖点绝对化 &nbsp;−15分（「不易X」不扣分）<br>生造词语 &nbsp;−15分<br>逻辑断裂 &nbsp;−10分<br><br><strong>一票否决（严重违规立即打回）：</strong>素人视角 / 硬广话术 / 严重绝对化宣称</div>
           </div>
         </div>
       </div>
@@ -459,12 +425,6 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
         <p>以霞湖世家品牌官方视角生成小红书图文，不使用素人/达人口吻</p>
       </div>
 
-      <div id="brief-status-strip" class="info-strip" style="display:none">
-        ✅ Brief 已解析 · 生成将结合品牌知识库
-      </div>
-      <div id="no-brief-strip" class="warn-strip" style="display:none">
-        ⚠️ 尚未解析 Brief · 建议先完成「Brief 解析」获得更精准的生成效果
-      </div>
 
       <div class="card">
         <div class="card-hd"><div class="step">1</div><h3>内容方向</h3></div>
@@ -711,6 +671,18 @@ const XIAHU_KB = `【霞湖世家产品知识库——创作前必读】
 · 透气性略低于80支，定价更高，是面料顶配
 · 写作角度：大牌工艺平替、高端送礼、对面料有讲究的人
 
+120支液氨棉T恤（凉感进阶 · 防蚊防晒）：
+· 棉盖丝工艺：表面棉（保留光泽与手感）+ 里面索罗拉（保留冰凉舒适感）；棉纱极细，触感丝滑，自带光泽
+· 液氨处理带来冰凉感，三款中夏日体感最凉
+· ⭐ 独家卖点——抑菌防蚊（80支和200支无此功能）：物理抗菌+防蚊处理，夏季出汗后依然清爽无异味
+· 防晒 UPF50+：遮热效果好，阳光直射不怕热
+· 不易变形（棉+索罗拉混纺）/ 保色佳（亨斯曼染料，白色不易发黄，黑色不易发灰）
+· 版型：正肩合身版型，仅一款，无 A/B 之分
+· 写作角度：防蚊差异化 / 夏日凉感 / UPF防晒 / 全天候通勤
+· ⚠️ 120支卖点表达禁止邀功：防蚊/防晒是产品功能陈述，不得写成品牌付出或研发故事
+  ❌ 「我们特别为120支加入了防蚊处理」「我们做到了防晒UPF50+」
+  ✓ 「120支采用物理防蚊处理，出汗也不担心异味」「UPF50+防晒，阳光直射不怕热」
+
 ▌三、液氨工艺体感转化（禁止裸露解释工艺原理，必须转为可感知的体验描述）
 每次只选最符合选题的1-2条，禁止全部堆砌进同一篇文案：
 
@@ -729,6 +701,14 @@ const XIAHU_KB = `【霞湖世家产品知识库——创作前必读】
 
 · 不粘毛：结构紧实，猫毛狗毛不易附着
   适合：宠物家庭 / 有猫/有狗的用户场景
+
+· 防晒（仅120支）：UPF50+，遮热效果好，阳光直射不怕热
+  适合：户外通勤 / 夏日外出
+
+· 抑菌防蚊（仅120支）：物理处理，减少细菌和异味，夏季出汗后保持清爽
+  表达：「夏天出汗也不担心气味」「户外两小时，清爽感不打折」
+  禁止夸大：不得写"消灭蚊虫""完全防蚊"——只说减少/降低
+  适合：夏日户外 / 长时间外出 / 运动场景
 
 ⚠️ 数字使用规则：技术数字必须接体感场景，不能裸露出现
   × "排汗性比普通纯棉高3-5倍"
@@ -755,6 +735,9 @@ const XIAHU_KB = `【霞湖世家产品知识库——创作前必读】
 · "我们"可以出现，但主语和落脚点必须是消费者得到什么，不能是品牌的付出/年限/荣耀
   ✓ 「每一根纱线的密度，决定了你穿一个夏天还是穿三个夏天」
   ❌ 「我们用了多年/我们克服了重重困难…」
+· 禁止以品牌为叙事主角的宏大导言：
+  ❌ 「霞湖世家告诉我们…」「霞湖的答案是…」「霞湖世家认为…」「霞湖世家选择了…」
+  → 这类句式以品牌主导全篇走向，违背"落脚点在消费者"原则；直接从产品事实或消费者场景切入
 · 产品描述与品牌理念约1:1篇幅，不能全篇讲品牌故事而轻描产品
 · 绝不反向讲卖点：❌「我们不做无法兑现的承诺」→ ✓「每一项性能指标，都来自实际测试的数据」
 
@@ -763,6 +746,8 @@ const XIAHU_KB = `【霞湖世家产品知识库——创作前必读】
 · 不是素人"我觉得/我试了"的个人体验，是产品导向的客观陈述 + 消费者能感知的具体场景
   参考语气：「80支棉纱的密度，触感比普通T恤细腻；液氨处理之后，夏天出汗后背不黏——通勤一整天也能保持干爽」
 · 最多三个卖点，有侧重，不罗列功能词
+· 每篇必须有一个明确的场景/主题作为切入点（如「连续三天出差」「办公室冷气直吹」「户外直晒两小时」）；卖点围绕这个场景展开，禁止脱离场景的功能参数列举
+· 禁止在强品文案中出现品牌研发故事/成本/努力（"我们做了什么"不出现）
 · 卖点之间有逻辑链：面料为什么好 → 穿上后消费者能感知到什么 → 在哪个具体场景最有感
 · 有递进感，不啰嗦：同一个意思不换说法重复`;
 
@@ -1370,6 +1355,9 @@ async function doGenerate() {
   ❌ 「我们付出了很多/我们花了很长时间/我们很骄傲…」
 · ⚠️ 全篇禁止任何「我们不…」句式（包括"我们不喜欢/我们不搞/我们不轻易…"）——以"我们"开头的否定句本质上仍以品牌为叙事主角，属于变相邀功；改为直接陈述产品事实
   ❌ 「我们不喜欢把时间挂在嘴边」→ ✓ 直接讲产品性能的具体数据或使用结果
+· ⚠️ 禁止以品牌主导全篇的宏大叙事句式：
+  ❌ 「霞湖世家告诉我们…」「霞湖的答案是…」「霞湖世家认为/相信/选择了…」
+  → 直接从产品事实或消费者场景切入，不需要品牌为自己开场白
 · 从产品事实切入，自然延伸到品牌态度；产品描述篇幅与品牌理念篇幅大致1:1
 
 强品方向：
@@ -1379,6 +1367,8 @@ async function doGenerate() {
   ❌ 个人经历时间词：「上周/最近/那天/有一次」（把品牌官号写成了个人博主）
   ❌ 第一人称场景故事：「上周公司年中汇报…」「换作以前，我…」
   ✓ 用通用场景代替：「通勤穿一整天」「高温天气户外两小时后」「多次机洗之后」
+· 开篇须有清晰的场景锚点（如「连续三天出差」「户外直晒两小时」），卖点全部围绕这一场景展开
+· 禁止脱离场景的功能词罗列；禁止出现品牌研发故事/成本/努力（"我们做了什么"不出现）
 · 最多三个卖点，有侧重，逻辑链：为什么好 → 消费者能感知到什么 → 具体场景
 
 通用规则：
@@ -1386,9 +1376,10 @@ async function doGenerate() {
 · 仿写时：参考文案中列举的消费者身份/人物画像（如「刚工作的年轻人/退休的长辈」）不得照搬——重新构建与本次产品和主题匹配的消费者场景
 
 【A/B款说明】
-- 默认不区分 A/B 款，统称产品名即可
-- 强品方向且涉及版型/廓形时：⚠️ 必须同时提及 A 和 B 两款（如「备有宽松的A款和修身的B款，适合不同身材」），严禁只写A款或只写B款；一句话带过，不展开分版型详述
-- 仅当补充要求中明确指定"A款"或"B款"时，才单独展开该款的版型细节；A款为宽松版型，B款为修身版型
+- 80支：有 A款（宽松）和 B款（修身）；涉及版型时必须同时提及A和B，严禁只写一款，一句话带过不展开
+- 120支：只有一种版型（正肩合身），无A/B之分；涉及版型时直接描述廓形特点，不提A/B
+- 200支：默认不区分版型，统称产品名即可
+- 仅当补充要求明确指定"A款"/"B款"时才单独展开；A款=宽松，B款=修身
 
 ${XIAHU_KB}${briefCtx}`;
 
@@ -1584,6 +1575,9 @@ ${input}`;
 品牌方向：
 · "我们"可出现，但落脚点必须在消费者得到什么，绝不以品牌的付出/成就为重心
 · ⚠️ 全篇禁止任何「我们不…」句式（包括"我们不喜欢/我们不搞/我们不轻易…"）——变相邀功，直接改为产品事实陈述
+· ⚠️ 禁止以品牌主导全篇的宏大叙事句式：
+  ❌ 「霞湖世家告诉我们…」「霞湖的答案是…」「霞湖世家认为/相信/选择了…」
+  → 直接从产品事实或消费者场景切入
 · 从产品事实切入，自然延伸到品牌态度；产品描述与品牌理念篇幅大致1:1
 
 强品方向：
@@ -1591,6 +1585,8 @@ ${input}`;
 · ⚠️ 严禁个人叙事口吻：
   ❌ 情绪词「最怕/最爱/感觉」；个人经历时间词「上周/那天/最近」；第一人称场景故事
   ✓ 用通用场景代替：「通勤穿一整天」「高温天气户外两小时后」
+· 开篇须有清晰的场景锚点（如「连续三天出差」「户外直晒两小时」），卖点全部围绕这一场景展开
+· 禁止脱离场景的功能词罗列；禁止出现品牌研发故事/成本/努力
 · 最多三个卖点，逻辑链：为什么好 → 消费者感知到什么 → 具体场景
 
 通用规则：
@@ -1598,9 +1594,10 @@ ${input}`;
 · 仿写时：参考文案的消费者身份/人物画像不得照搬——重新构建与本次主题匹配的消费者场景
 
 【A/B款说明】
-- 默认不区分 A/B 款，统称产品名即可
-- 强品方向且文案中提及版型/廓形时：⚠️ 必须同时提及 A 和 B 两款（如「备有宽松的A款和修身的B款，适合不同身材」），严禁只写A款或只写B款；一句话带过，不展开具体描述
-- 仅当补充要求中明确指定"A款"或"B款"时，才单独展开该款的版型细节；A款为宽松版型，B款为修身版型
+- 80支：有 A款（宽松）和 B款（修身）；涉及版型时必须同时提及A和B，严禁只写一款，一句话带过不展开
+- 120支：只有一种版型（正肩合身），无A/B之分；涉及版型时直接描述廓形特点，不提A/B
+- 200支：默认不区分版型，统称产品名即可
+- 仅当补充要求明确指定"A款"/"B款"时才单独展开；A款=宽松，B款=修身
 
 ${XIAHU_KB}
 
