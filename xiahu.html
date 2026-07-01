@@ -360,7 +360,7 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
           </div>
           <div class="brief-card">
             <div class="brief-card-title">📝 内容方向规范</div>
-            <div class="brief-card-body"><strong>品牌方向：</strong>以产品事实切入→延伸品牌态度；落脚点在消费者，不在品牌付出；产品描述与品牌理念约1:1篇幅<br>⚠️ <strong>开篇铁律</strong>：标题严禁出现「霞湖」「霞湖世家」等品牌名/产品名——须以生活场景/观点/情感切入；正文第一句必须是简短生活方式哲学句（如「一个清爽的夏天就差一件T恤」），不超过20字，不直接引入品牌或产品<br><br><strong>强品方向（产品向）：</strong>开篇须有清晰场景锚点（如「连续三天出差」「户外直晒两小时」）；产品为主语，不出现"我们"；最多三个卖点+逻辑链（为什么好→消费者感知→具体场景）；禁品牌研发/成本叙事<br>⚠️ <strong>开篇铁律</strong>：第一段必须同时包含①具体场景锚点 + ②痛点，缺一不可；不允许以功能词罗列或品牌介绍开篇<br><br><strong>通用：</strong>语气贯穿全文；禁照搬参考文案消费者画像；每段之间空一行<br>⚠️ 参考文案（竞品）只借结构/节奏，其品牌名/卖点数据/产品功能一律忽略，所有卖点只能来源于知识库</div>
+            <div class="brief-card-body"><strong>强品方向：</strong><br>① 开篇前1-2句必须同时写清具体场景与消费者痛点<br>② 重点放在产品、体感和使用场景；禁止强调品牌投入、研发、成本和付出<br>③ 可借鉴KOL自然、有交流感的语气，但保持官号身份，禁止“我买了/我发现/宝藏/安利”等个人体验话术<br>④ 最多三个卖点，围绕同一场景形成“为什么好→消费者感知→具体场景”的逻辑链<br><br><strong>品牌方向：</strong><br>① 正文第一句必须从简短生活理念或生活方式切入，不直接介绍品牌或产品<br>② 禁止品牌邀功及“霞湖世家告诉我们/霞湖的答案是/认为/选择了”等主导叙事<br>③ 产品事实与品牌理念篇幅约1:1，落脚在消费者体验<br>④ 120支品牌向必须提及防蚊，只陈述产品功能，不写成品牌付出<br><br><strong>仿写要求：</strong>同时仿写参考文案的切入点、主题、语气、叙事方向、情绪节奏和段落作用；产品事实始终以Brief为准，禁止只套形式后堆砌卖点。</div>
           </div>
           <div class="brief-card">
             <div class="brief-card-title">📦 80支液氨棉T恤（黄金区间）</div>
@@ -500,6 +500,21 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
       <!-- AI 审核区 -->
       <div class="card">
         <div class="card-hd"><div class="step">AI</div><h3>AI 自动审核</h3></div>
+        <div class="flabel">本次内容方向（必选）</div>
+        <select id="review-dir" class="fi" style="min-height:unset;height:42px;padding:8px 12px;margin-bottom:8px" onchange="setReviewDir(this.value)">
+          <option value="">— 请选择品牌向 / 强品向 / 促销向 —</option>
+          <option value="品牌">品牌向</option>
+          <option value="强品">强品向</option>
+          <option value="促销">促销向</option>
+        </select>
+        <div class="flabel">本次审核产品（必选）</div>
+        <select id="review-prod" class="fi" style="min-height:unset;height:42px;padding:8px 12px;margin-bottom:8px" onchange="setReviewProd(this.value)">
+          <option value="">— 请选择 80支 / 120支 / 200支 —</option>
+          <option value="80支液氨棉T恤">80支液氨棉T恤</option>
+          <option value="120支液氨棉T恤">120支液氨棉T恤</option>
+          <option value="200支液氨棉T恤">200支液氨棉T恤</option>
+        </select>
+        <div id="review-prod-context" class="info-strip" style="display:none;margin-bottom:10px"></div>
         <div class="flabel">待审核文案（从「文案生成」自动填入，或手动粘贴）</div>
         <textarea id="review-input" class="fi" style="min-height:150px" placeholder="粘贴要审核的文案..."></textarea>
         <div style="margin-top:10px">
@@ -508,7 +523,7 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
         </div>
         <div class="btn-row" style="margin-top:12px">
           <button class="btn-pri" id="review-btn" onclick="doAIReview()">🔍 开始审核</button>
-          <button class="btn-ghost btn-sm" onclick="document.getElementById('review-input').value='';document.getElementById('review-special-req').value=''">清空</button>
+          <button class="btn-ghost btn-sm" onclick="clearReviewForm()">清空</button>
         </div>
         <div id="review-result-area" style="display:none;margin-top:16px">
           <hr class="divider">
@@ -542,16 +557,16 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
       <div class="card" id="writer-draft-card">
         <div class="card-hd">
           <div class="step">✍️</div>
-          <h3 id="draft-card-title">人工修改稿</h3>
+          <h3 id="draft-card-title">人工修改稿（原稿副本）</h3>
           <div style="margin-left:auto;font-size:12px;color:var(--sub)">
             今日已提交 <strong id="sub-count" style="color:var(--ok)">0</strong> 篇
           </div>
         </div>
         <div class="info-strip">
-          参考 AI 审核报告修改 → 点「提交这篇」→ 继续下一篇 → 当天结束后导出全部记录发给管理员
+          AI 只提供问题句替换建议，不生成完整重写稿；原稿保持不动，由写手自行决定是否采用
         </div>
         <textarea id="my-draft" class="fi" style="min-height:200px"
-          placeholder="AI 审核完成后，这里会自动出现根据审核报告生成的修改稿&#10;&#10;在修改稿基础上继续修改 → 点「提交这篇」完成本篇"></textarea>
+          placeholder="送审原稿会原样复制到这里；AI 不会自动改写或覆盖&#10;&#10;请根据问题句替换建议人工修改后提交"></textarea>
         <div class="btn-row" style="margin-top:12px">
           <button class="btn-ok" onclick="submitArticle()">✓ 提交这篇</button>
           <button class="btn-ghost btn-sm" onclick="autoSaveDraft()">暂存</button>
@@ -568,7 +583,7 @@ textarea.fi{resize:vertical;min-height:120px;line-height:1.6}
         <!-- 导出区 -->
         <div class="export-section" id="export-section" style="display:none">
           <h4>📤 每日导出</h4>
-          <p>包含：AI审核报告 + AI修改稿 + 人工修改稿（三段对比），发给管理员用于分析优化方向</p>
+          <p>包含：AI审核报告（问题句替换建议）+ 原稿 + 人工修改稿，发给管理员用于分析优化方向</p>
           <div class="btn-row">
             <button class="btn-sec" onclick="exportDailyRecords()">导出今日全部记录</button>
             <button class="btn-ghost btn-sm" onclick="clearSubmissions()">清空记录</button>
@@ -631,7 +646,12 @@ const S = {
   briefRaw: '',
   refs: [],
   currentDir: '品牌',
-  currentProd: '80支液氨棉T恤（A款）',
+  currentProd: '80支液氨棉T恤',
+  reviewProd: '',
+  reviewDir: '',
+  reviewRuleSnapshot: null,
+  reviewRefText: '',
+  reviewRefBlueprint: '',
   gen: '',
   genRefText: '',        // 生成时使用的参考文案原文（用于审核重写保持结构）
   currentAiDraft: '',   // AI 第一版生成稿
@@ -652,6 +672,88 @@ const DIR_CTA = {
   '强品': '软引流：「想了解更多，直播间见」',
   '促销': '中等引流：「今天在直播间，我们给大家准备了专属福利」',
 };
+const DIRECTION_RULES = {
+  '强品': {
+    title: '强品向',
+    rules: [
+      '开篇前1-2句必须同时出现明确场景与消费者痛点，不能只罗列功能。',
+      '重点始终放在产品、体感和使用场景，不强调品牌投入、研发过程、成本或付出。',
+      '可借鉴KOL自然、有交流感的语言，但保持官号身份；禁止我买了、我发现、宝藏、安利等个人体验话术。',
+      '卖点围绕同一场景展开，最多三个，形成“为什么好→消费者感知→具体场景”的逻辑链。',
+    ],
+  },
+  '品牌': {
+    title: '品牌向',
+    rules: [
+      '正文第一句必须由一句简短的生活理念或生活方式切入，不直接介绍品牌或产品。',
+      '禁止强调品牌多厉害、花了多少时间成本；禁止“霞湖世家告诉我们／霞湖的答案是／霞湖世家选择了”等品牌主导叙事。',
+      '产品事实与品牌理念篇幅约为1:1，最终落脚在消费者获得的体验。',
+      '120支品牌向必须明确提及防蚊卖点，且只陈述产品功能，不写成品牌邀功。',
+    ],
+  },
+  '促销': {
+    title: '促销向',
+    rules: ['活动信息清晰，保持品牌克制语气，禁止硬广和虚假稀缺话术。'],
+  },
+};
+
+function buildDirectionContext(dir, prod) {
+  const cfg = DIRECTION_RULES[dir] || DIRECTION_RULES['品牌'];
+  const lines = cfg.rules.map((x,i) => (i+1)+'. '+x).join('\n');
+  const extra = dir === '品牌' && prod === '120支液氨棉T恤'
+    ? '\n本篇为120支品牌向：防蚊是必提项，缺失即不合格。'
+    : '';
+  return `【${cfg.title}统一强制规则——生成与审核共同执行】
+${lines}${extra}`;
+}
+
+function contentBodySentences(text) {
+  const lines = String(text).split(/\n/).map(x => x.trim()).filter(x => x && !x.startsWith('#'));
+  const body = lines.length > 1 ? lines.slice(1).join('') : lines.join('');
+  return body.match(/[^。！？]+[。！？]?/g) || [];
+}
+
+function runDeterministicDirectionChecks(text, dir, prod) {
+  const issues = [];
+  const sentences = contentBodySentences(text);
+  const opening = sentences.slice(0,2).join('');
+  const add = (type, original, replacement, reason) => issues.push({type,original,replacement,reason,patchable:false});
+  const bragPatterns = [
+    /霞湖世家告诉我们[^。！？]*/, /霞湖(?:世家)?的答案是[^。！？]*/, /霞湖世家(?:认为|相信|选择了)[^。！？]*/,
+    /我们[^。！？]*(?:花了|投入|研发了|成本|努力|坚持了|反复打磨|做了\d+|打造了)/
+  ];
+  for (const re of bragPatterns) {
+    const m = text.match(re);
+    if (m) add('品牌邀功或主导叙事', findClaimSnippet(text,m[0]), '改为消费者场景或产品事实', '禁止强调品牌付出、成本或以品牌为答案');
+  }
+  if (dir === '强品') {
+    const hasScene = /(通勤|上班|会议|出差|旅行|户外|高温|夏天|夏日|暴晒|运动|骑行|约会|一整天|连续\d+天|早晚)/.test(opening);
+    const hasPain = /(闷|热|汗|黏|粘|皱|勒|尴尬|异味|变形|褪色|难打理|不透气|厚重|不清爽)/.test(opening);
+    if (!hasScene || !hasPain) add(
+      '强品向开篇缺少场景或痛点', opening || '（正文开篇缺失）',
+      '用前1-2句话同时写明具体场景与痛点',
+      '强品向必须从场景和痛点展开；当前'+(!hasScene&&!hasPain?'两项均缺失':!hasScene?'缺少场景':'缺少痛点')
+    );
+    const personal = text.match(/(?:我买了|我发现|我最近|真的被惊艳|宝藏|安利|超喜欢)/);
+    if (personal) add('强品向误用个人KOL话术', findClaimSnippet(text,personal[0]), '改为自然但客观的官号表达', '可借KOL交流感，但不能使用个人体验或安利口吻');
+    const brandFocus = text.match(/我们[^。！？]*(?:研发|投入|成本|努力|打磨|坚持|花了|做了)/);
+    if (brandFocus) add('强品向强调品牌付出', findClaimSnippet(text,brandFocus[0]), '改写为产品体感和使用场景', '强品向重点必须放在产品上');
+  }
+  if (dir === '品牌') {
+    const first = sentences[0] || '';
+    if (!first || first.length > 30 || /(霞湖|80支|120支|200支|液氨|这款T恤|产品)/.test(first)) add(
+      '品牌向缺少生活理念切入', first || '（正文第一句缺失）',
+      '以一句简短生活理念或生活方式开篇',
+      '第一句不得直接介绍品牌、产品或工艺'
+    );
+    if (prod === '120支液氨棉T恤' && !/防蚊/.test(text)) add(
+      '120支品牌向漏写防蚊', '（全文缺失）', '补充120支物理防蚊卖点',
+      '120支品牌向防蚊为必提卖点'
+    );
+  }
+  return issues;
+}
+
 const PROD_TAGS = {
   '80支液氨棉T恤': '#霞湖世家80支',
   '200支液氨棉T恤': '#霞湖世家200支',
@@ -1248,6 +1350,11 @@ async function doBriefParse() {
 【核心原则】
 这是品牌官方账号，不是达人/素人账号。当前阶段只关注文案内容，不涉及配图和拍摄。
 
+【必须写入官号内容方向的长期规则】
+- 强品向：开篇前1-2句同时包含明确场景和消费者痛点；重点放在产品、体感与使用场景；禁止品牌投入/研发/成本/付出叙事；可借KOL自然交流感，但禁个人购买体验、宝藏、安利。
+- 品牌向：第一句以简短生活理念或生活方式切入；禁止品牌邀功和“霞湖世家告诉我们/霞湖的答案是/认为/选择了”等叙事；产品事实与品牌理念约1:1；120支品牌向必提防蚊。
+- 仿写：同步参考切入点、主题、风格、内容方向、情绪节奏和段落作用；不得只仿形式后堆砌卖点；产品事实以Brief为准。
+
 【必须过滤掉的内容（不在输出中展示）】
 - 配图/图片/拍摄/摄影/视觉要求（如：图片≥15张、2look、光线要求等）
 - 对博主/达人/KOL的行为要求（如：发布时间、互动要求、粉丝画像）
@@ -1436,17 +1543,20 @@ async function doGenerate() {
   const refItem  = refIdx !== '' ? S.refs[parseInt(refIdx)] : null;
   const refText  = refPaste || (refItem ? refItem.content : '');
 
+  const genRule = getProductRulePackage(S.currentProd);
   const briefCtx = S.brief
-    ? `\n\n【品牌知识库（来自 Brief 解析）】\n品牌基础：${S.brief['品牌基础']||''}\n产品信息：${S.brief['产品信息']||''}\n必带卖点与标签：${S.brief['必带卖点与标签']||''}\n执行要求：${S.brief['执行要求（官号版）']||''}\n审核红线：${S.brief['审核红线']||''}`
-    : '';
+    ? `\n\n【Brief最高优先级规则】\n品牌基础：${S.brief['品牌基础']||''}\n本次产品信息（只允许使用${S.currentProd}）：${genRule?.facts||''}\n执行要求：${S.brief['执行要求（官号版）']||''}\n审核红线：${S.brief['审核红线']||''}`
+    : `\n\n【本次产品信息】\n${genRule?.facts||''}`;
 
   const sys = `你是霞湖世家品牌小红书官方账号的专职内容创作者。
+
+${buildDirectionContext(S.currentDir, S.currentProd)}
 
 【身份铁律——最高优先级，违反即重写】
 ✦ 身份：霞湖世家品牌官号，以品牌方身份发声
 ✦ 禁止一切素人/达人视角：
   ❌ 禁止："我最近发现了…" / "我买了这件衣服之后…" / "真的被惊艳到了" / "宝藏品牌安利"
-  ✅ 允许："这件T恤，我们做了18个月" / "今年夏天，我们想给大家一个选择"
+  ✅ 允许：用自然、有交流感的语言描述具体场景、产品体感和消费者得到什么
 ✦ "我们"仅用于品牌集体发声，不用"我"的个人视角
 ✦ 品牌调性：自信而克制，用事实和故事说话，不自夸
 
@@ -1493,7 +1603,7 @@ async function doGenerate() {
 · ⚠️ 禁止以品牌主导全篇的宏大叙事句式：
   ❌ 「霞湖世家告诉我们…」「霞湖的答案是…」「霞湖世家认为/相信/选择了…」
   → 直接从产品事实或消费者场景切入，不需要品牌为自己开场白
-· 从产品事实切入，自然延伸到品牌态度；产品描述篇幅与品牌理念篇幅大致1:1
+· 正文第一句先以一句简短生活理念或生活方式切入，再自然进入产品事实与品牌态度；产品描述与品牌理念篇幅大致1:1
 
 强品方向：
 · 全篇不出现"我们"，以产品为主语（「这款T恤」「霞湖世家80支」「液氨冷萃工艺」）
@@ -1502,7 +1612,7 @@ async function doGenerate() {
   ❌ 个人经历时间词：「上周/最近/那天/有一次」（把品牌官号写成了个人博主）
   ❌ 第一人称场景故事：「上周公司年中汇报…」「换作以前，我…」
   ✓ 用通用场景代替：「通勤穿一整天」「高温天气户外两小时后」「多次机洗之后」
-· 开篇须有清晰的场景锚点（如「连续三天出差」「户外直晒两小时」），卖点全部围绕这一场景展开
+· 开篇前1-2句必须同时包含清晰场景锚点与消费者痛点，卖点全部围绕这一场景展开
 · 禁止脱离场景的功能词罗列；禁止出现品牌研发故事/成本/努力（"我们做了什么"不出现）
 · 最多三个卖点，有侧重，逻辑链：为什么好 → 消费者能感知到什么 → 具体场景
 
@@ -1541,17 +1651,18 @@ ${XIAHU_KB}${briefCtx}`;
       ? `\n【参考文案结构蓝图——段落数和节奏骨架必须对齐】\n正文共 ${_body.length} 段（约${_total}字），仿写也必须是 ${_body.length} 段，总字数控制在 ${Math.round(_total*0.85)}～${Math.round(_total*1.2)} 字：\n${_lines}\n每段字数允许±20%，段落顺序不变。\n`
       : '';
     const _coreAngle = extra
-      ? `\n【用户特殊要求——最高优先级，完全覆盖上述一切蓝图规则】\n${extra}\n执行规则：\n- 若用户要求中明确规定了段落结构（如"第一段XX，第二段XX，结尾XX"），以用户规定的段落结构和内容分工为准，参考文案段落蓝图的段落数和分工作废；但总字数仍须参照参考文案（约${_total}字），将字数分配到用户规定的各段落中，每段充分展开，不能因结构不同而大幅缩水\n- 若用户要求未明确段落结构，则保持参考文案段落数，但每段内容必须围绕用户要求重新构建\n- 无论哪种情况，严禁照搬参考文案任何原文词组、短句或句式骨架\n`
+      ? `\n【用户特殊要求——须执行，但不得覆盖产品事实、方向规则与审核红线】\n${extra}\n执行规则：\n- 若用户要求中明确规定了段落结构（如"第一段XX，第二段XX，结尾XX"），以用户规定的段落结构和内容分工为准，参考文案段落蓝图的段落数和分工作废；但总字数仍须参照参考文案（约${_total}字），将字数分配到用户规定的各段落中，每段充分展开，不能因结构不同而大幅缩水\n- 若用户要求未明确段落结构，则保持参考文案段落数，但每段内容必须围绕用户要求重新构建\n- 无论哪种情况，严禁照搬参考文案任何原文词组、短句或句式骨架\n`
       : '';
     imitateBlock = `【仿写指令：参考文案提供结构骨架，补充要求决定内容方向】
 ${_blueprint}${_coreAngle}
 执行要点：
-1. 自动判断参考笔记类型（随手po / 情绪感慨 / 科普干货 / 测评 / 大字报），按该类型风格仿写
-2. 段落骨架对齐蓝图：段落数、每段长度、叙事功能（铺垫/转折/收口）和情绪节奏与参考笔记逐段对应
-3. 每段内容围绕核心切入点展开，若参考文案话题与切入点无关则完全丢弃，以切入点相关场景重建
-4. ⚠️ 仿写绝非抄袭：每一个句子都必须完全重写，严禁复用任何原文词组、短语或句式骨架
+1. 先在内部识别参考文案的核心切入点、主题、内容方向、叙述语气、情绪节奏与每段作用，再开始写作
+2. 新稿必须沿用参考文案的切入方式、风格和叙事方向，不得只复制段落形式后堆砌产品卖点
+3. 段落数、每段长度、铺垫/转折/收口功能与参考文案对应，但所有品牌名、产品事实和卖点数据必须替换为当前Brief规则
+4. 参考文案如为KOL语气，只借自然交流感；仍保持官号身份，禁止个人购买体验、宝藏、安利等表达
+5. 每个句子必须重新表达，严禁复用参考原文词组、短句或句式骨架
 
-参考文案（结构参考，非内容参考）：
+参考文案（切入点、主题、语气、方向和结构参考；产品事实不参考）：
 ---
 ${refText}
 ---
@@ -1565,7 +1676,7 @@ ${refText}
 方向说明：${DIR_HINTS[S.currentDir]}
 结尾引流规则：${DIR_CTA[S.currentDir]}
 主推产品：${S.currentProd}
-${extra ? `\n【用户特殊要求——最高优先级，完全覆盖其它所有规则】\n${extra}` : ''}
+${extra ? `\n【用户特殊要求——须执行，但不得覆盖产品事实、方向规则与审核红线】\n${extra}` : ''}
 
 标签规则（共10个，一个不多一个不少）：
 永久必带4个（缺一不可）：#霞湖世家 #高支棉 #高支纱 ${PROD_TAGS[S.currentProd]||'#霞湖世家80支'}
@@ -1597,10 +1708,52 @@ function clearGen() {
   document.getElementById('extra-req').value = '';
   document.getElementById('ref-paste').value = '';
 }
+function setReviewDir(dir) {
+  S.reviewDir = dir || '';
+  refreshReviewContext();
+}
+
+function refreshReviewContext() {
+  const el = document.getElementById('review-prod-context');
+  if (!el) return;
+  if (!S.reviewProd || !S.reviewDir) { el.style.display = 'none'; el.textContent = ''; return; }
+  const source = S.reviewRuleSnapshot?.source || '内置备用规则';
+  const refState = S.reviewRefText ? '已锁定本篇参考文案' : '本篇无参考文案';
+  el.style.display = '';
+  el.textContent = '已锁定：' + S.reviewDir + '向｜' + S.reviewProd + '｜规则来源：' + source + '｜' + refState;
+}
+
+function setReviewProd(prod) {
+  S.reviewProd = prod || '';
+  S.reviewRuleSnapshot = prod ? getProductRulePackage(prod) : null;
+  refreshReviewContext();
+}
+
+function clearReviewForm() {
+  document.getElementById('review-input').value = '';
+  document.getElementById('review-special-req').value = '';
+  const sel = document.getElementById('review-prod');
+  if (sel) sel.value = '';
+  const dirSel = document.getElementById('review-dir');
+  if (dirSel) dirSel.value = '';
+  S.reviewRefText = '';
+  S.reviewRefBlueprint = '';
+  setReviewDir('');
+  setReviewProd('');
+}
+
 function sendToReview() {
   if (!S.gen) { toast('请先生成文案'); return; }
   document.getElementById('review-input').value = S.gen;
-  navigate('review'); toast('已发送到审核台');
+  S.reviewRefText = S.genRefText || '';
+  S.reviewRefBlueprint = buildRefBlueprint(S.reviewRefText);
+  const sel = document.getElementById('review-prod');
+  if (sel) sel.value = S.currentProd;
+  const dirSel = document.getElementById('review-dir');
+  if (dirSel) dirSel.value = S.currentDir;
+  setReviewDir(S.currentDir);
+  setReviewProd(S.currentProd);
+  navigate('review'); toast('已发送到审核台，并锁定 ' + S.currentDir + '向 · ' + S.currentProd);
 }
 
 // ══════════════════════════════════════════════
@@ -1621,57 +1774,278 @@ ${lines.join('\n')}
 执行规则：段落数必须严格等于 ${body.length} 段，不得增减；每段字数保持在上述约定的 ±20% 内；叙事节奏与对应段落保持一致。`;
 }
 
-function buildProdIsolation(prod) {
-  const map = {
-    '80支液氨棉T恤': {
-      tags: '80支新疆长绒棉、液氨冷萃工艺（可提凉感/抗皱/速干效果）、丝滑温润手感、A款宽松/B款修身（两款版型需同时提）',
-      ban: [
-        'UPF50+（防晒数据，120支专属，80支无此功能）',
-        '防蚊/抑菌处理（120支专属，80支无此功能）',
-        '棉盖丝工艺（120支专属面料结构）',
-        '索罗拉纤维（120支专属原料）',
-        '正肩合身（120支版型，80支有A/B两款不叫此名）',
-        '超薄奢华/手感接近高端衬衫（200支定位词）',
-      ]
-    },
-    '120支液氨棉T恤': {
-      tags: '棉盖丝工艺、索罗拉纤维、UPF50+防晒、物理防蚊抑菌、正肩合身版型（无A/B款之分）、120支凉感进阶',
-      ban: [
-        'Qmax≥0.21（80支专属凉感数据，120支无此参数）',
-        '远超国标1.4倍（80支专属数据）',
-        '1g棉纱可拉130米（80支专属纱线数据）',
-        '零下34℃处理（80支液氨冷萃专属参数）',
-        'A款/B款（120支只有一款正肩合身版型，禁提A/B）',
-        '黄金区间/性价比之选（80支定位词）',
-        '超薄奢华/手感接近高端衬衫（200支定位词）',
-      ]
-    },
-    '200支液氨棉T恤': {
-      tags: '200支超高支数、极致丝滑、面料紧实、手感接近高档衬衫、奢华体验、大牌工艺平替',
-      ban: [
-        'UPF50+（120支专属）',
-        '防蚊/抑菌（120支专属）',
-        '棉盖丝/索罗拉（120支专属）',
-        'A款/B款（200支默认不区分版型）',
-        'Qmax≥0.21（80支专属数据）',
-        '1g棉纱可拉130米（80支专属数据）',
-      ]
-    }
-  };
-  const p = prod || '80支液氨棉T恤';
-  const info = map[p] || map['80支液氨棉T恤'];
-  return `【产品卖点隔离——最高优先级，违反视为一票否决】
-本次主推产品：${p}
-✅ ${p}专属卖点/关键词（所有卖点只能来自此处，不得联想）：
-   ${info.tags}
-❌ 以下是其他产品的专属数据，出现在${p}文案中是严重错误，必须全部识别并删除：
-${info.ban.map(b => '   · ' + b).join('\n')}
-⚠️ 若原文已含上述禁止数据，重写时必须将其全部清除，并替换为${p}的专属卖点`;
+const PRODUCT_RULES = {
+  '80支液氨棉T恤': {
+    facts: '顺滑丝感与棉的温润手感；液氨处理带来持久凉感；抗皱保形、保色耐洗、不易粘毛；涉及版型时A款宽松与B款修身必须同时提及。',
+    exclusive: ['Qmax','零下34℃','1g棉纱','130米','A款','B款'],
+  },
+  '120支液氨棉T恤': {
+    facts: '棉盖丝工艺：表面棉、里面索罗拉；液氨凉感；物理防蚊与抗菌；UPF50+防晒；亨斯曼染料保色；正肩合身，仅一款，无A/B之分。',
+    exclusive: ['棉盖丝','索罗拉','UPF50+','防蚊','抑菌','亨斯曼','正肩合身'],
+  },
+  '200支液氨棉T恤': {
+    facts: '超高支数、极致丝滑、面料紧实；手感接近高档衬衫；定位为奢华体验、大牌工艺平替与高端送礼；默认不区分版型。',
+    exclusive: ['超高支','高档衬衫','顶级面料','奢华体验'],
+  },
+};
+
+function productNumber(prod) {
+  return String(prod || '').match(/(80|120|200)支/)?.[1] || '';
 }
+
+function extractBriefProductBlock(prod) {
+  const text = String(S.brief?.['产品信息'] || '').trim();
+  if (!text || text === '未能提取') return '';
+  const target = productNumber(prod);
+  const lines = text.split(/\n/);
+  let start = lines.findIndex(line => new RegExp('(^|[^0-9])' + target + '支').test(line) && /(T恤|液氨|产品|面料|：|:)/.test(line));
+  if (start < 0) return '';
+  const collected = [];
+  for (let i = start; i < lines.length; i++) {
+    const line = lines[i];
+    const heading = line.match(/(^|[^0-9])(80|120|200)支/);
+    if (i > start && heading && heading[2] !== target && /(T恤|液氨|产品|面料|：|:)/.test(line)) break;
+    collected.push(line);
+  }
+  return collected.join('\n').trim();
+}
+
+function getProductRulePackage(prod) {
+  const normalized = PROD_TAGS[prod] ? prod : '';
+  if (!normalized) return null;
+  const briefFacts = extractBriefProductBlock(normalized);
+  const base = PRODUCT_RULES[normalized];
+  const requiredTags = ['#霞湖世家','#高支棉','#高支纱',PROD_TAGS[normalized]];
+  const otherProducts = Object.keys(PRODUCT_RULES).filter(p => p !== normalized);
+  return {
+    product: normalized,
+    facts: briefFacts || base.facts,
+    source: briefFacts ? 'Brief解析' : '页面当前产品知识（备用）',
+    requiredTags,
+    forbiddenTags: otherProducts.map(p => PROD_TAGS[p]),
+    forbiddenClaims: otherProducts.flatMap(p => PRODUCT_RULES[p].exclusive.map(term => ({ product:p, term }))),
+  };
+}
+
+function buildProdIsolation(prod) {
+  const rule = getProductRulePackage(prod);
+  if (!rule) return '未选择审核产品，禁止开始审核。';
+  return `【本次产品规则快照——最高优先级】
+审核产品：${rule.product}
+规则来源：${rule.source}
+以下是本产品允许使用的事实，不代表每篇都必须全部出现：
+${rule.facts}
+除方向规则明确指定的强制项外，任何允许卖点缺失都不得扣分或要求补写。当前唯一特殊强制卖点：品牌向120支必须提防蚊。
+
+固定必带标签由程序独立核查，AI不得提出标签建议：${rule.requiredTags.join(' ')}
+禁止出现的其他产品标签：${rule.forbiddenTags.join(' ')}
+禁止将其他产品独占卖点写成本产品卖点：
+${rule.forbiddenClaims.map(x => '· '+x.term+'（'+x.product+'）').join('\n')}
+
+重要：不得要求补充80/120/200支中其他产品的标签或卖点；不得使用完整Brief中其他产品的信息。`;
+}
+
+function extractHashtags(text) {
+  return (String(text).match(/#[^\s#，。；、]+/g) || []).map(x => x.replace(/[,.!?，。！？；;]+$/g,''));
+}
+
+function findClaimSnippet(text, term) {
+  const line = String(text).split(/\n/).find(x => x.includes(term));
+  if (!line) return term;
+  const parts = line.split(/(?<=[。！？；])/);
+  return (parts.find(x => x.includes(term)) || line).trim();
+}
+
+function runDeterministicProductChecks(text, prod) {
+  const rule = getProductRulePackage(prod);
+  if (!rule) return [];
+  const tags = extractHashtags(text);
+  const issues = [];
+  for (const tag of rule.requiredTags) {
+    if (!tags.includes(tag)) issues.push({
+      type:'缺少当前产品固定标签', original:'（全文缺失）', replacement:'补充 '+tag,
+      reason:'本次审核仅要求 '+rule.product+' 的4个固定标签', patchable:false
+    });
+  }
+  for (const tag of rule.forbiddenTags) {
+    if (tags.includes(tag)) issues.push({
+      type:'跨产品标签混用', original:tag, replacement:'删除 '+tag,
+      reason:tag+' 不属于 '+rule.product, patchable:false
+    });
+  }
+  const seen = new Set();
+  for (const item of rule.forbiddenClaims) {
+    if (!text.includes(item.term) || seen.has(item.term)) continue;
+    seen.add(item.term);
+    issues.push({
+      type:'跨产品卖点混用', original:findClaimSnippet(text,item.term),
+      replacement:'删除该卖点，改用 '+rule.product+' 的真实卖点',
+      reason:item.term+' 是 '+item.product+' 的独占信息', patchable:false
+    });
+  }
+  if (prod === '80支液氨棉T恤') {
+    const hasA = /A款/.test(text), hasB = /B款/.test(text);
+    if (hasA !== hasB) issues.push({
+      type:'80支版型信息不完整', original:hasA?'A款':'B款',
+      replacement:'涉及版型时同时说明A款宽松与B款修身',
+      reason:'80支涉及版型必须A/B同时提及', patchable:false
+    });
+  }
+  if (prod !== '80支液氨棉T恤' && /A款|B款/.test(text)) issues.push({
+    type:'跨产品版型混用', original:findClaimSnippet(text,/A款/.test(text)?'A款':'B款'),
+    replacement:'删除A/B款表述', reason:prod+'不使用80支A/B版型规则', patchable:false
+  });
+  return issues;
+}
+
+
+function parseReviewJSON(raw) {
+  const cleaned = String(raw || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  const start = cleaned.indexOf('{'), end = cleaned.lastIndexOf('}');
+  if (start < 0 || end <= start) throw new Error('审核结果不是有效 JSON');
+  const data = JSON.parse(cleaned.slice(start, end + 1));
+  data.score = Math.max(0, Math.min(100, Number(data.score) || 0));
+  data.verdict = ['合格','需修改','不合格'].includes(data.verdict) ? data.verdict : '需修改';
+  data.summary = String(data.summary || '审核完成');
+  data.issues = (Array.isArray(data.issues) ? data.issues : []).map(x => ({
+    type: String(x?.type || '内容问题').trim(), original: String(x?.original || '').trim(),
+    replacement: String(x?.replacement || '').trim(), reason: String(x?.reason || '').trim(),
+    patchable: x?.patchable !== false
+  })).filter(x => x.original && x.replacement && x.original !== x.replacement);
+  return data;
+}
+
+function formatStructuredReview(data) {
+  const tagIssues = data.issues.filter(x => /标签/.test(x.type));
+  const sentenceIssues = data.issues.filter(x => !/标签/.test(x.type));
+  const tagRows = tagIssues.length
+    ? tagIssues.map((x,i) => (i+1)+'. '+x.type+'：'+x.reason+'；处理：'+x.replacement).join('\n')
+    : '当前产品4个固定标签正确，未发现其他产品标签。';
+  const sentenceRows = sentenceIssues.length
+    ? sentenceIssues.map((x,i) =>
+        (i+1)+'. '+x.type+'\n   问题原句：「'+x.original+'」\n   替换句：「'+x.replacement+'」'+(x.reason?'\n   原因：'+x.reason:'')
+      ).join('\n\n')
+    : '未发现需要替换的问题句。';
+  const refStatus = data.hasReference ? '已按本篇参考文案检查切入点、主题、语气、方向、节奏与结构' : '本篇未关联参考文案，未执行风格一致性检查';
+  return '内容方向：'+(data.direction||'—')+'向\n审核产品：'+(data.product||'—')+
+    '\n规则来源：'+(data.ruleSource||'—')+'\n参考文案：'+refStatus+
+    '\n评分：'+data.score+'分\n结论：'+data.verdict+'\n一句话评价：'+data.summary+
+    '\n\n## 标签检查（程序判断，AI无权修改）\n'+tagRows+
+    '\n\n## 问题句替换建议\n'+sentenceRows+
+    '\n\n说明：系统未生成完整重写稿，也未自动修改原稿。';
+}
+
+
+function firstBodyLine(text) {
+  const lines = String(text).split(/\n/).map(x=>x.trim()).filter(x=>x && !x.startsWith('#'));
+  if (!lines.length) return '';
+  const firstLooksTitle = /^标题[：:]?/.test(lines[0]) || lines.length > 1;
+  return (firstLooksTitle ? lines[1] : lines[0]) || '';
+}
+
+function isDirectUsableSentence(value) {
+  const s = String(value || '').trim();
+  if (s.length < 4 || s.length > 160) return false;
+  if (/^(建议|请|改为|可改为|可以改成|替换为|重新写|补充|删除|以一句|用一句|加入|调整为)/.test(s)) return false;
+  if (/(简短生活理念|生活方式开篇|直接可用的句子|新的第一句|替换句内容|待补充|示例句)/.test(s)) return false;
+  if (/^[【\[（(].*[】\]）)]$/.test(s)) return false;
+  return true;
+}
+
+function directFallbackSentence(issue, dir, prod) {
+  let s = String(issue?.original || '');
+  const replacements = [
+    ['出汗不粘身','透气不闷热'],['反复机洗不发黄','多次机洗保色性好'],
+    ['不褪色','不易褪色'],['不变形','不易变形'],['不起球','不易起球'],
+    ['不串色','保色性好'],['不发灰','不易发灰'],['不开裂','耐穿性更好'],['不塌陷','保形性更好']
+  ];
+  for (const [a,b] of replacements) if (s.includes(a)) return s.replaceAll(a,b);
+  if (/防蚊|120支品牌向漏写防蚊/.test(issue?.type+' '+issue?.reason)) {
+    return '120支采用物理防蚊处理，让夏日穿着多一层清爽保护。';
+  }
+  if (dir === '强品') return '夏日通勤一整天，闷热和黏腻最容易打乱状态。';
+  if (dir === '品牌') return '清爽的日常，从一份从容开始。';
+  return '让日常穿着更舒适，也更从容。';
+}
+
+function enforceManualSentenceRequest(issues, input, specialReq) {
+  if (!/(第一句|首句|开头|开篇)/.test(specialReq || '')) return issues;
+  const target = firstBodyLine(input);
+  if (!target) return issues;
+  const matched = issues.find(x => x.original === target || /(第一句|首句|开头|开篇|生活理念)/.test(x.type));
+  if (matched) {
+    matched.original = target;
+    matched.type = '人工指定修改：重新给第一句';
+    matched.reason = '根据特殊审核要求，直接提供可替换原第一句的成品句子';
+    return issues;
+  }
+  return [{
+    type:'人工指定修改：重新给第一句', original:target,
+    replacement:'需要生成直接可用的新句子', reason:'根据特殊审核要求', patchable:false
+  }, ...issues];
+}
+
+async function ensureDirectReplacements(issues, input, dir, prod, specialReq, refText) {
+  const invalid = issues.map((x,i)=>({x,i})).filter(item => !/标签/.test(item.x.type) && !isDirectUsableSentence(item.x.replacement));
+  if (!invalid.length) return issues;
+  let repairBuf = '';
+  const sys = '你是中文文案句子编辑器。只交付可直接复制进原稿的成品句子，禁止输出写作指令、占位语、解释或完整文章。';
+  const usr = `为以下问题逐条生成可直接替换原句的成品句子。
+硬性要求：
+1. replacement必须是最终成品句，不得出现“建议、改为、以一句、用一句、重新写、补充”等操作说明。
+2. 每项只输出一个句子，保持本稿${dir}向、${prod}的语气。
+3. 只修复对应问题，不新增其他产品卖点，不处理标签。
+4. ${specialReq ? '必须执行人工要求：'+specialReq : '无额外人工要求。'}
+5. ${refText ? '延续所附参考文案的切入方式、语气与节奏，但不采用其品牌或产品事实。' : '延续原稿现有语气。'}
+
+待修复项：
+${invalid.map(item => JSON.stringify({id:item.i,type:item.x.type,original:item.x.original,reason:item.x.reason})).join('\n')}
+
+原稿：
+---
+${input}
+---
+${refText ? '\n参考文案：\n---\n'+refText+'\n---' : ''}
+
+只输出合法JSON：
+{"replacements":[{"id":0,"replacement":"可直接粘贴的完整成品句。"}]}`;
+  try {
+    await callAI(sys, usr, chunk => { repairBuf += chunk; });
+    const start = repairBuf.indexOf('{'), end = repairBuf.lastIndexOf('}');
+    const parsed = JSON.parse(repairBuf.slice(start,end+1));
+    for (const item of (parsed.replacements || [])) {
+      const issue = issues[Number(item.id)];
+      if (issue && isDirectUsableSentence(item.replacement)) issue.replacement = String(item.replacement).trim();
+    }
+  } catch {}
+  for (const item of invalid) {
+    if (!isDirectUsableSentence(issues[item.i].replacement)) {
+      issues[item.i].replacement = directFallbackSentence(issues[item.i], dir, prod);
+    }
+  }
+  return issues;
+}
+
 
 async function doAIReview() {
   const input = document.getElementById('review-input').value.trim();
   if (!input) { toast('请输入待审核文案'); return; }
+  const reviewDir = document.getElementById('review-dir')?.value || '';
+  if (!reviewDir) { toast('请先选择本次内容方向'); return; }
+  const reviewProd = document.getElementById('review-prod')?.value || '';
+  if (!reviewProd) { toast('请先选择本次审核产品'); return; }
+  setReviewDir(reviewDir);
+  setReviewProd(reviewProd);
+  const ruleSnapshot = S.reviewRuleSnapshot;
+  if (!ruleSnapshot) { toast('产品规则加载失败，请重新选择产品'); return; }
+  const productIssues = runDeterministicProductChecks(input, reviewProd);
+  const directionIssues = runDeterministicDirectionChecks(input, reviewDir, reviewProd);
+  const deterministicIssues = [...productIssues, ...directionIssues];
+  const deterministicSummary = deterministicIssues.length
+    ? deterministicIssues.map((x,i) => (i+1)+'. '+x.type+'｜'+x.original+'｜'+x.reason).join('\n')
+    : '未发现跨产品标签、独占卖点或版型冲突。';
+  const originalDraftEl = document.getElementById('my-draft');
+  if (originalDraftEl) originalDraftEl.value = input;
   const btn = document.getElementById('review-btn');
   btn.disabled = true; btn.textContent = '审核中…';
   document.getElementById('review-result-area').style.display = '';
@@ -1682,14 +2056,18 @@ async function doAIReview() {
 
   const reviewSpecialReq = document.getElementById('review-special-req')?.value.trim() || '';
   const briefRedlines = S.brief?.['审核红线'] || '';
-  const briefKpiTags  = S.brief?.['必带卖点与标签'] || '';
-  const briefCtx = (briefRedlines || briefKpiTags) ? `\n\n【Brief 规定的审核要求】\n${briefKpiTags ? '必带卖点与标签（逐项核查是否缺失，缺一项 -10分）：\n' + briefKpiTags + '\n\n' : ''}${briefRedlines ? '审核红线：\n' + briefRedlines : ''}` : '';
+  const briefCtx = briefRedlines ? `\n\n【Brief全局审核红线】\n${briefRedlines}` : '';
+  const refStyleCtx = S.reviewRefText
+    ? `\n\n【本篇参考文案风格快照——只检查风格，不采用其中品牌与卖点】\n${S.reviewRefBlueprint || ''}\n检查维度：核心切入点、主题、叙述语气、内容方向、情绪节奏、段落结构与段落作用。\n参考文案：\n---\n${S.reviewRefText}\n---\n若存在不一致，只指出造成偏离的具体原句并给出同风格替换句；禁止要求整篇重写。`
+    : '\n\n【参考文案一致性】本篇未携带参考文案，不检查风格一致性。';
 
   const sys = `你是霞湖世家官号内容审核专家，专门审核小红书图文是否符合官号发布标准。
 
-${buildProdIsolation(S.currentProd || '80支液氨棉T恤')}
+${buildDirectionContext(reviewDir, reviewProd)}
 
-审核时若发现原文出现了上述❌禁止数据（即其他产品的专属卖点/参数），必须在问题清单中明确标注「⚠️ 跨产品数据混用」，要求重写时全部删除。`;
+${buildProdIsolation(reviewProd)}
+
+审核时若发现原文出现其他产品专属卖点，只能针对具体问题句给出替换句。\n你无权审核、补充或修改标签；标签结果完全以程序预检为准。\n禁止输出完整文案、总体改写方案、重写结构或任何整篇重写内容。`;
   const usr = `审核以下霞湖世家官号文案，逐条检查所有问题。
 
 【审核维度】
@@ -1709,166 +2087,61 @@ ${buildProdIsolation(S.currentProd || '80支液氨棉T恤')}
 附加扣分：
 - 标题超过20字：-4分
 - 重复表达（如「反复机洗」）：-3分/处
-- 缺少 #霞湖世家 标签：-8分
-- 缺少产品专属标签 ${PROD_TAGS[S.currentProd||'80支液氨棉T恤']||'#霞湖世家80支'}（注意：仅核查此短格式标签，不含产品名后缀）：-8分
-- 引流结尾语气过硬：-5分${briefCtx}
+- 标签不属于AI审核范围，不得对标签扣分或提出建议
+- 引流结尾语气过硬：-5分${briefCtx}${refStyleCtx}
 
 【评分说明】即便存在多处问题，评分最低给45分；"一票否决"表示「必须修改才能发布」，不代表文案整体无价值，请勿因多项叠加扣分导致结果极端偏低。
 
-【输出格式】
-评分：XX分
-结论：合格 / 需修改 / 不合格
-一句话评价：（总结）
+【程序确定性预检——必须尊重，不得提出相反建议】
+本次内容方向：${reviewDir}向
+本次审核产品：${reviewProd}
+${deterministicSummary}
+程序预检已完成标签、产品隔离和方向硬规则检查。你不得推翻或重复生成标签结论，只继续检查具体问题句与参考风格一致性。
 
-## 详细审核报告
-（逐条列出问题，每条格式：
-▸ 问题类型
-▸ 原文：「具体问题句子」
-▸ 建议改为：「具体改写文字」）
-
-## 总体改写建议
-（综合建议，如问题较多给出修改思路）
+【输出格式——只能输出合法 JSON，不要 Markdown，不要代码围栏】
+{"score":85,"verdict":"需修改","summary":"一句话评价","issues":[{"type":"问题类型","original":"从待审核文案中逐字复制且唯一匹配的完整原句","replacement":"只替换该原句的新句子","reason":"简短原因"}]}
+AI输出的issues只能包含具体问题句，禁止包含标签问题。original必须是原稿中逐字存在的最小问题句或单独一行，禁止复制整段；replacement必须是可直接复制粘贴进原稿的最终成品句。严禁输出“以一句生活理念开篇”“建议改为”“重新写一句”等操作说明或占位语。若特殊审核要求指定重新给第一句/某一句，即使没有其他违规，也必须返回该原句及一条直接可用的新句子。若文案合格且没有人工指定修改才返回空数组。不得输出完整文案、总体改写建议或结构重写方案；每个replacement必须保持原稿及参考文案的切入点、语气和节奏。
 
 待审核文案：
-${input}${reviewSpecialReq ? `\n\n【写手特殊审核要求——最高优先级，审核时优先聚焦此处】\n${reviewSpecialReq}` : ''}`;
+${input}${reviewSpecialReq ? `\n\n【人工指定修改任务——必须实际交付替换句】\n${reviewSpecialReq}\n执行要求：定位用户指定的原句，并返回可直接粘贴使用的成品替换句；不得只解释应该怎么写。` : ''}`;
 
   S.reviewBuf = '';
   try {
-    await callAI(sys, usr, chunk => {
-      S.reviewBuf += chunk;
-      renderReviewResult(S.reviewBuf);
-    });
-    S.currentAiReview = S.reviewBuf;
-    // 提取分数
-    const sm = S.reviewBuf.match(/评分[：:]\s*(\d+)/);
-    S.currentAiScore = sm ? parseInt(sm[1]) : 0;
-    toast('审核完成，正在生成修改稿…');
-
-    // AI 自动生成修改稿（使用与文案生成完全一致的品牌规则 + 审核报告约束）
-    const draftEl = document.getElementById('my-draft');
-    if (draftEl) {
-      draftEl.value = '⏳ AI 正在根据审核报告生成修改稿…';
-      draftEl.disabled = true;
-
-      // 重建与生成文案相同的 briefCtx
-      const rwBriefCtx = S.brief
-        ? `\n\n【品牌知识库（来自 Brief 解析）】\n品牌基础：${S.brief['品牌基础']||''}\n产品信息：${S.brief['产品信息']||''}\n必带卖点与标签：${S.brief['必带卖点与标签']||''}\n执行要求：${S.brief['执行要求（官号版）']||''}\n审核红线：${S.brief['审核红线']||''}`
-        : '';
-
-      // 与文案生成一致的完整品牌规则 + 重写任务说明
-      const rwSys = `【本次任务——凌驾于所有品牌规则之上，最先执行】
-审核后最小化修复：你收到了一篇霞湖世家官号文案及其 AI 审核报告，任务是「外科手术式」地修复具体违规，绝不是重新创作。
-
-核心约束（违反视为整体失败）：
-① 原文的段落数、段落顺序、每段主题必须100%保留——只改违规的字词，不改结构骨架
-② 审核报告中列出的每一条问题必须全部修复
-③ 没有审核报告问题的段落：逐字保留原文，一字不动
-④ 正文段落间空一行；只输出完整文案（标题+正文+标签），不加任何说明或前缀
-${S.genRefText ? '\n'+buildRefBlueprint(S.genRefText)+'\n上述蓝图为原参考文案的段落结构——修复稿必须在此框架内操作，不得突破段落数量和字数约束\n' : ''}
----以下为霞湖世家官号品牌规则（修复时遵守，但不得以此为由扩写结构）---
-
-你是霞湖世家品牌小红书官方账号的专职内容创作者。
-
-【身份铁律——违反即重写】
-✦ 身份：霞湖世家品牌官号，以品牌方身份发声
-✦ 禁止一切素人/达人视角：
-  ❌ 禁止："我最近发现了…" / "我买了这件衣服之后…" / "真的被惊艳到了" / "宝藏品牌安利"
-  ✅ 允许："这件T恤，我们做了18个月" / "今年夏天，我们想给大家一个选择"
-✦ "我们"仅用于品牌集体发声，不用"我"的个人视角
-✦ 品牌调性：自信而克制，用事实和故事说话，不自夸
-
-【内容铁律】
-❌ 绝对化宣称：「洗两年不变形」→「不易变形」；「最好」「全网第一」→ 直接删除
-❌ 重复表达：「反复机洗」→「多次机洗」
-❌ 匠人情怀：「三十年匠心」「三代传承」以及任何以年数强调品牌历史的表达（「用了X年」「历经X年」「磨了三十年」「做了二十年」等）→ 一律删除，改为产品具体事实陈述，绝不以时间标榜品质
-❌ 性别限定：正文和标签均禁止出现「男士」「男装」「女士」「女装」等性别词 → 正文改为「大家」或删去；标签中#男士基础款/#男士T恤此类tag一律不写
-❌ 时效性节日名称：「父亲节」「母亲节」「情人节」「七夕」等节日名不得写入标题或正文；若补充要求提到节日，一律转换为通用场景表达（如「父亲的生日礼物」「送给最重要的人」），不绑定特定节日
-❌ 硬广话术：「今日最低价」「直播间疯抢」「扣1」→ 全部删除
-❌ 细节负面场景描述：「坐下肚子那圈勒出横纹」「见客户都要先拽一下衣服」→ 删除，改用正面卖点陈述
-❌ 卖点绝对化：
-  · 正向绝对禁用：「出汗不粘身」→「透气不闷热」；「反复机洗不发黄」→「多次机洗保色性好」
-  · 直接否定式禁用：「不褪色」「不变形」「不起球」「不串色」「不发灰」「不开裂」「不塌陷」→ 必须修改
-    ✓ 可改为加"易"字：「不易褪色」「不易变形」「不易起球」（可接受）
-    ✓ 或改为正向描述：「保色性好」「抗皱性好」「耐洗耐磨」（更自然）
-❌ 数据堆砌：直接罗列技术参数让消费者没有感觉 → 把数字转化为可感知的体验
-  ✦ 数字可以存在，但必须有场景或感受作为载体，禁止裸露堆砌参数
-❌ 逻辑断裂：使用「不是A，是B」「与其说A，不如说B」等对比句时，A 和 B 必须在同一描述维度，不能把来源和程度、原因和结果强行并列
-  ❌ 「不是涂层的凉感，是穿上后体感明显降温」→ 来源 vs 程度，维度不同，逻辑断裂
-  ✓ 「不是会洗掉的涂层凉感，而是纤维结构改变后持久的清爽」→ 都在描述凉感来源，逻辑成立
-  · 效果描述中禁止引入无来源的具体数字（如"洗了八十次""穿了三个通勤季"），数字必须来自真实测试数据
-❌ 生造词语：禁止发明不存在于日常语言中的词语组合，写出来的每个词消费者都要能直接理解
-  ❌ 典型反例：「低温柔和感」「通勤季」「安静的高级感」「散干净」→ 这类自创修饰词一律不得使用
-  ✓ 使用日常可理解的体感词：「凉意」「清爽」「干爽」「顺滑」「细腻」「挺括」「保形」「透气」「不闷」
-
-【口吻与视角规则——按内容方向严格执行】
-
-品牌方向：
-· "我们"可出现，但落脚点必须在消费者得到什么，绝不以品牌的付出/成就为重心
-· ⚠️ 全篇禁止任何「我们不…」句式（包括"我们不喜欢/我们不搞/我们不轻易…"）——变相邀功，直接改为产品事实陈述
-· ⚠️ 禁止以品牌主导全篇的宏大叙事句式：
-  ❌ 「霞湖世家告诉我们…」「霞湖的答案是…」「霞湖世家认为/相信/选择了…」
-  → 直接从产品事实或消费者场景切入
-· 从产品事实切入，自然延伸到品牌态度；产品描述与品牌理念篇幅大致1:1
-
-强品方向：
-· 全篇不出现"我们"，以产品为主语（「这款T恤」「霞湖世家80支」）
-· ⚠️ 严禁个人叙事口吻：
-  ❌ 情绪词「最怕/最爱/感觉」；个人经历时间词「上周/那天/最近」；第一人称场景故事
-  ✓ 用通用场景代替：「通勤穿一整天」「高温天气户外两小时后」
-· 开篇须有清晰的场景锚点（如「连续三天出差」「户外直晒两小时」），卖点全部围绕这一场景展开
-· 禁止脱离场景的功能词罗列；禁止出现品牌研发故事/成本/努力
-· 最多三个卖点，逻辑链：为什么好 → 消费者感知到什么 → 具体场景
-
-通用规则：
-· 语气贯穿全文：开篇定调后不切换视角
-· 仿写时：参考文案的消费者身份/人物画像不得照搬——重新构建与本次主题匹配的消费者场景
-
-【A/B款说明】
-- 80支：有 A款（宽松）和 B款（修身）；涉及版型时必须同时提及A和B，严禁只写一款，一句话带过不展开
-- 120支：只有一种版型（正肩合身），无A/B之分；涉及版型时直接描述廓形特点，不提A/B
-- 200支：默认不区分版型，统称产品名即可
-- 仅当补充要求明确指定"A款"/"B款"时才单独展开；A款=宽松，B款=修身
-
-${buildProdIsolation(S.currentProd || '80支液氨棉T恤')}
-
-【开篇铁律——按内容方向执行，违反即重写】
-${(S.currentDir||'')==='强品'
-  ? '强品方向：第一段必须同时包含①具体场景锚点（如「通勤穿一整天」「户外高温直晒两小时」）和②痛点，两者缺一不可；不允许以功能词罗列或品牌介绍开篇'
-  : (S.currentDir||'')==='品牌'
-    ? '品牌方向：①标题严禁出现「霞湖」「霞湖世家」等品牌名或产品名——标题须以生活场景/观点/情感切入；②正文第一句必须是一句简短生活方式哲学句（不超过20字），不直接引入品牌或产品名称'
-    : '促销方向：标题和开篇可直接点出活动主题，结尾引流语气符合品牌调性即可'}
-
-${XIAHU_KB}
-
-${rwBriefCtx}`;
-
-      const rwUsr = `【原文】
-${input}
-
-【AI审核报告（必须逐条解决全部问题）】
-${S.reviewBuf}
-
-【创作参数】
-内容方向：${S.currentDir || '品牌'}
-主推产品：${S.currentProd || '80支液氨棉T恤'}
-标签规则（共10个，一个不多一个不少）：永久必带4个（#霞湖世家 #高支棉 #高支纱 ${PROD_TAGS[S.currentProd||'80支液氨棉T恤']||'#霞湖世家80支'}），再补充6个，方向可选标签：${(S.currentDir||'')==='强品'?'#通勤穿搭 #夏日凉感T恤 #百搭穿搭':(S.currentDir||'')==='品牌'?'#通勤穿搭 #匠人男装 #创始人走心分享':'#通勤穿搭 根据内容选取'}，合计恰好10个。
-${reviewSpecialReq ? `\n【写手特殊审核要求——最高优先级】\n${reviewSpecialReq}\n执行规则：若写手指定了只重写某段/某句，则只修改该处，其余段落逐字保留，不做任何额外调整。` : ''}
-
-请生成修改稿，确保审核报告中每一条问题都已修复，直接输出完整文案。`;
-
-      let rwBuf = '';
-      try {
-        await callAI(rwSys, rwUsr, chunk => { rwBuf += chunk; draftEl.value = rwBuf; });
-        S.currentAiRewrite = rwBuf.trim();
-        toast('修改稿已生成，请在此基础上继续修改 ✓');
-      } catch (e) {
-        draftEl.value = input;
-        toast('修改稿生成失败，已填入原文');
-      }
-      draftEl.disabled = false;
+    await callAI(sys, usr, chunk => { S.reviewBuf += chunk; });
+    const data = parseReviewJSON(S.reviewBuf);
+    data.issues = data.issues.filter(x => !/标签/.test(x.type));
+    const remainingDeterministic = deterministicIssues.filter(di =>
+      !data.issues.some(ai => di.original !== '（全文缺失）' && ai.original === di.original)
+    );
+    data.issues = [...remainingDeterministic, ...data.issues];
+    data.issues = enforceManualSentenceRequest(data.issues, input, reviewSpecialReq);
+    data.issues = await ensureDirectReplacements(data.issues, input, reviewDir, reviewProd, reviewSpecialReq, S.reviewRefText);
+    data.product = reviewProd;
+    data.direction = reviewDir;
+    data.ruleSource = ruleSnapshot.source;
+    data.hasReference = !!S.reviewRefText;
+    if (deterministicIssues.length) {
+      if (data.verdict === '合格') data.verdict = '需修改';
+      data.score = Math.min(data.score, 84);
     }
+    const report = formatStructuredReview(data);
+    S.reviewBuf = report;
+    S.currentAiReview = report;
+    S.currentAiScore = data.score;
+    S.currentAiRewrite = '（已取消完整AI重写；仅提供问题句替换建议）';
+    renderReviewResult(report);
+    const safeDraftEl = document.getElementById('my-draft');
+    if (safeDraftEl) safeDraftEl.value = input;
+    btn.disabled = false; btn.textContent = '🔍 开始审核';
+    toast('审核完成，原稿未修改；提供 ' + data.issues.filter(x=>!/标签/.test(x.type)).length + ' 条问题句建议 ✓');
+    return;
+
   } catch (e) {
-    document.getElementById('review-output').textContent = '审核失败：' + e.message; toast('审核失败');
+    S.currentAiRewrite = '（审核异常，未生成完整重写稿）';
+    const fallbackDraftEl = document.getElementById('my-draft');
+    if (fallbackDraftEl) fallbackDraftEl.value = input;
+    document.getElementById('review-output').textContent = '审核结果异常，已保留原稿：' + e.message;
+    toast('审核异常，已安全回退原稿');
   }
   btn.disabled = false; btn.textContent = '🔍 开始审核';
 }
@@ -1898,8 +2171,8 @@ function submitArticle() {
   const entry = {
     id: Date.now(),
     submittedAt: new Date().toLocaleString('zh-CN',{hour12:false}),
-    direction: S.currentDir || '—',
-    product: S.currentProd || '—',
+    direction: S.reviewDir || S.currentDir || '—',
+    product: S.reviewProd || S.currentProd || '—',
     aiDraft: S.currentAiDraft || '（未记录）',
     aiRewrite: S.currentAiRewrite || '（未生成，写手直接修改原稿）',
     aiScore: S.currentAiScore || 0,
@@ -1983,8 +2256,8 @@ function exportDailyRecords() {
     out += `${'═'.repeat(45)}\n\n`;
     out += `【AI 审核报告】（AI评分：${e.aiScore}分 | 人工评分：${e.humanScore||'未填'}分）\n${e.aiReview}\n\n`;
     out += `${'─'.repeat(40)}\n`;
-    out += `【AI 修改稿】（对比基准）\n${e.aiRewrite||e.aiDraft}\n\n`;
-    out += `【人工修改稿】（写手在AI修改稿基础上的改动）\n${e.humanDraft}\n\n`;
+    out += `【AI问题句替换建议说明】（对比基准）\n${e.aiRewrite||e.aiDraft}\n\n`;
+    out += `【人工修改稿】（写手参考问题句替换建议后的人工改动）\n${e.humanDraft}\n\n`;
     out += `${'─'.repeat(40)}\n`;
     out += `【AI 原始生成稿】（参考）\n${e.aiDraft}\n\n`;
   });
